@@ -13,57 +13,84 @@ Project repository for CSCI 3308
 
 ## Project Description
 
-Briefly describe the purpose of the application.
+InternshipTrackr is an internship discovery and application management platform designed for college students who are actively searching for internships and preparing to enter the workforce.
 
-Include:
-- What the application does
-- Who the intended users are
-- What problem the application is trying to solve
+Students often use several different websites, spreadsheets, calendars, and personal notes to manage their internship search. This can make it difficult to keep track of applications, deadlines, interviews, and offers.
+
+Our project aims to solve this problem by providing one centralized platform where students can discover internship opportunities and manage every stage of the internship application process.
+
+The application will provide users with a personalized dashboard where they can quickly view their application statuses, upcoming deadlines, interviews, and offers.
 
 ---
 
 ## Application Idea
 
-Describe the original idea for the project.
+For college students who need a convenient way to track internships and manage their applications, InternshipTrackr is an internship tracking application that helps users stay organized by tracking application progress, deadlines, interviews, and offers.
+
+Unlike platforms such as LinkedIn or Handshake, InternshipTrackr combines internship discovery with comprehensive application management tools, allowing students to navigate the entire internship search process in one place.
 
 ### Problem
 
-Briefly explain the problem your team identified.
+College students frequently apply to many internship opportunities across several different platforms.
+
+Important information may be spread across:
+- LinkedIn
+- Handshake
+- Company career websites
+- Email
+- Personal calendars
+- Spreadsheets
+- Notes
+
+Managing all of these resources separately can make it difficult for students to remember deadlines, interview dates, application statuses, and other important information.
 
 ### Proposed Solution
 
-Briefly explain how your application addresses the problem.
+InternshipTrackr will provide students with a centralized platform for managing their internship search.
+
+Users will be able to:
+
+- Create an account
+- Log in securely
+- Discover internship opportunities
+- Save internship opportunities
+- Track submitted applications
+- Update application statuses
+- Track deadlines
+- Record interview dates
+- Track internship offers
+- View application progress from a personalized dashboard
 
 ---
 
-## User-Centered Design Process
+## User-Centered Design Process(Documentation in Progress)
 
 ### Step 1: Application Idea
 
-Describe the initial application idea.
+initial application idea description. 
 
 ### Step 2: Initial Design
 
-Describe your team's first version of the solution.
+Team's first version of the solution.
 
 ### Step 3: User Interviews
 
-Briefly describe:
+Brief description of the following:
 - Who was interviewed
 - What questions were asked
 - Important feedback received
 
 ### Step 4: Evaluation of Initial Design
 
-Explain what your team learned from the interviews.
+What we learned as a team from the interviews. 
 
 ### Step 5: Redesigned Solution
 
-Describe the changes made based on user feedback.
+Changes made based on user feedback.
 
 ### Step 6: Final User Feedback
 
-Summarize the feedback received after presenting the redesigned application.
+Feedback received after presenting the redesigned application.
 
 ---
 
@@ -83,9 +110,6 @@ Summarize the feedback received after presenting the redesigned application.
 
 ### Additional Features
 
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
 - [ ] User profile page
 - [ ] Admin functionality
 - [ ] External API integration
@@ -165,7 +189,7 @@ Summarize the feedback received after presenting the redesigned application.
 
 ## Database Design
 
-Briefly describe the database structure.
+Database structure description.
 
 ### Tables
 
@@ -176,7 +200,7 @@ Briefly describe the database structure.
 
 ### Relationships
 
-Describe the relationships between database tables.
+Description of the relationships between database tables.
 
 ### ER Diagram
 
@@ -184,19 +208,19 @@ Add the ER diagram here when available.
 
 ---
 
-## Application Pages
+## Application Pages(Documentation in Progress)
 
 ### Home Page
 
-Brief description.
+General introduction to InternshipTrackr and access to important application features.
 
 ### Login Page
 
-Brief description.
+Allows existing users to securely log into their account.
 
 ### Registration Page
 
-Brief description.
+Allows new users to create an InternshipTrackr account.
 
 ### Page / Feature 4
 
@@ -226,13 +250,13 @@ Add or remove routes as the application develops.
 
 ## Authentication and Security
 
-### Password Hashing
+### Password Hashing(Documentation in Progress)
 
-Describe how passwords are hashed before being stored.
+how passwords are hashed before being stored.
 
 ### Sessions
 
-Describe how user sessions are created and maintained.
+how user sessions are created and maintained.
 
 ### Protected Routes
 
@@ -408,7 +432,7 @@ git push origin feature/example
 
 ---
 
-## Known Issues
+## Known Issues(Documentation in Progress)
 
 - Issue 1
 - Issue 2
@@ -416,7 +440,7 @@ git push origin feature/example
 
 ---
 
-## Future Improvements
+## Future Improvements(Documentation in Progress)
 
 - Improvement 1
 - Improvement 2
@@ -424,7 +448,7 @@ git push origin feature/example
 
 ---
 
-## Screenshots
+## Screenshots(Documentation in Progress)
 
 ### Home Page
 
