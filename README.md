@@ -193,14 +193,74 @@ Database structure description.
 
 ### Tables
 
-- `users`
-- Table 2
-- Table 3
-- Table 4
+- users
+
+| Column       | Type         | Constraints |
+|--------------|--------------|-------------|
+| username     | VARCHAR(50)  | PRIMARY KEY |
+| password     | VARCHAR(60)  | NOT NULL    |
+| email        | VARCHAR(100) | NOT NULL    |
+| first_name   | VARCHAR(100) | NOT NULL    |
+| last_name    | VARCHAR(100) | NOT NULL    |
+| phone_number | VARCHAR(15)  |             |
+
+- internships
+
+| Column      | Type         | Constraints |
+|-------------|--------------|-------------|
+| id          | SERIAL       | PRIMARY KEY |
+| title       | VARCHAR(100) | NOT NULL    |
+| description | TEXT         | NOT NULL    |
+| company     | VARCHAR(100) | NOT NULL    |
+| location    | VARCHAR(100) | NOT NULL    |
+| start_date  | DATE         | NOT NULL    |
+| end_date    | DATE         | NOT NULL    |
+| openings    | INT          | NOT NULL    |
+
+- interviews
+
+| Column         | Type        | Constraints                    |
+|----------------|-------------|--------------------------------|
+| id             | SERIAL      | PRIMARY KEY                    |
+| internship_id  | INT         | FOREIGN KEY → internships(id)  |
+| user_id        | VARCHAR(50) | FOREIGN KEY → users(username)  |
+| interview_date | DATE        | NOT NULL                       |
+| interview_time | TIME        | NOT NULL                       |
+| status         | VARCHAR(20) | NOT NULL                       |
+
+- applications
+
+| Column           | Type        | Constraints                    |
+|------------------|-------------|--------------------------------|
+| id               | SERIAL      | PRIMARY KEY                    |
+| internship_id    | INT         | FOREIGN KEY → internships(id)  |
+| user_id          | VARCHAR(50) | FOREIGN KEY → users(username)  |
+| application_date | DATE        | NOT NULL                       |
+| status           | VARCHAR(20) | NOT NULL                       |
+
+- internship_tags
+
+| Column   | Type        | Constraints |
+|----------|-------------|-------------|
+| tag_id   | SERIAL      | PRIMARY KEY |
+| tag_name | VARCHAR(50) | NOT NULL    |
+
+- internship_to_tag
+
+| Column        | Type | Constraints                            |
+|---------------|------|----------------------------------------|
+| internship_id | INT  | FOREIGN KEY → internships(id)          |
+| tag_id        | INT  | FOREIGN KEY → internship_tags(tag_id)  |
 
 ### Relationships
 
-Description of the relationships between database tables.
+| Table A     | Relationship | Table B          | Via                                |
+|-------------|--------------|------------------|------------------------------------|
+| users       | one-to-many  | applications     | applications.user_id               |
+| internships | one-to-many  | applications     | applications.internship_id         |
+| users       | one-to-many  | interviews       | interviews.user_id                 |
+| internships | one-to-many  | interviews       | interviews.internship_id           |
+| internships | many-to-many | internship_tags  | internship_to_tag (join table)     |
 
 ### ER Diagram
 
