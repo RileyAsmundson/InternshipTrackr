@@ -1,0 +1,202 @@
+
+/* InternshipTrackr Main */
+
+:root {
+    --primary: #668ab5;
+    --primary-dark: #365c89;
+    --background: #f5f7fb;
+    --white: #ffffff;
+    --text: #253550;
+    --muted: #718096;
+    --border: #e1e7ef;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: var(--background);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+h1, h2, h3 {
+    color: var(--text);
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+/* Login Page */
+
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.login-page h1 {
+    font-size: 32px;
+    color: var(--primary-dark);
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.login-container {
+    background-color: var(--white);
+    width: 100%;
+    max-width: 420px;
+    padding: 35px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(30, 55, 90, 0.08);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #ccd6e3;
+    border-radius: 6px;
+    font-size: 15px;
+    background-color: #fff;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(102, 138, 181, 0.15);
+}
+
+.login-container button {
+    width: 100%;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.login-container button:hover {
+    background-color: var(--primary-dark);
+}
+
+/*  Home Page */
+
+.homepage {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 24px;
+}
+
+.homepage h1 {
+    font-size: 28px;
+    margin-bottom: 25px;
+}
+
+.categories {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.category-box {
+    background-color: var(--white);
+    padding: 28px 18px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(30, 55, 90, 0.04);
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.category-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(30, 55, 90, 0.1);
+}
+
+.dashboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.tasks,
+.status {
+    background-color: var(--white);
+    padding: 25px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    min-height: 250px;
+}
+
+.tasks h2,
+.status h2 {
+    font-size: 19px;
+    margin-top: 0;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.status ul {
+    padding-left: 20px;
+}
+
+.status li {
+    padding: 6px 0;
+    color: var(--muted);
+}
+
+/* Responsive Design */
+
+@media (max-width: 768px) {
+    .categories {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+
+    .homepage {
+        padding: 25px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .categories {
+        grid-template-columns: 1fr;
+    }
+
+    .login-container {
+        padding: 24px;
+    }
+
+    .login-page h1 {
+        font-size: 26px;
+    }
+}
