@@ -1,0 +1,34 @@
+Lab 8 Extra Credit
+
+1. Database and Backend Integration Issues
+Severity: High
+Risk: Problems connecting the Node.js/Express server to PostgreSQL could prevent the application 
+from storing or retrieving information.
+Mitigation: Set up the database and server early, and regularly test connections and core operations 
+to identify problems before the final deadline.
+
+2. Team Coordination and Merge Conflicts
+Severity: Medium
+Risk: Team members working on related files may introduce conflicting changes or duplicate work.
+Mitigation: Coordinate responsibilities through Microsoft Teams, work on separate GitHub branches, 
+and review changes before merging them.
+
+3. Application Security
+Severity: High
+Risk: User accounts and personal application information could be exposed if authentication or 
+access controls are implemented incorrectly.
+Mitigation: Hash passwords, manage sessions securely, validate user input, and restrict access so 
+users can view and edit only their own records.
+
+4. External API Limitations
+Severity: Medium
+Risk: An internship listings API may be unreliable, unavailable, or subject to rate limits.
+Mitigation: Keep internship discovery optional at first and allow manual entry or use preloaded 
+sample listings if an external API is unavailable.
+
+5. Incorrect Deadline or Interview Tracking
+Severity: Medium
+Risk: Incorrect dates or reminder logic could cause students to miss application deadlines, 
+interviews, or offer decisions.
+Mitigation: Validate entered dates and test how upcoming deadlines, interviews, and offers are 
+displayed on the dashboard and calendar.

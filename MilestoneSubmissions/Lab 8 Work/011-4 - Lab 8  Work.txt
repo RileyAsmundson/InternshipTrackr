@@ -1,0 +1,39 @@
+﻿Team Number: 011-4
+Team Name: Internship Maxing
+Team Members: Alexander Jezierski, Eder Santillan,  Emma Gebbie, Riley Asmundson, Vishnu Renganathan
+Application Name: InternshipTrackr 
+
+Audience
+Our target audience is college students, particularly undergraduate students who are actively searching for internships and preparing to enter the workforce. Our ideal user is a student applying to multiple internship opportunities who needs a convenient way to organize applications, track deadlines, manage interviews, and keep up with their progress throughout the recruiting process.
+Many students use multiple websites, spreadsheets, or personal notes to manage their internship search, making it difficult to stay organized and keep track of important dates. Our application aims to solve this problem by providing a centralized platform where students can discover internship opportunities and manage every stage of the application process in one place.
+To ensure the application is accessible and easy to use, we plan to create a simple, organized interface with clear navigation and straightforward features. A personalized dashboard will allow users to quickly view their application statuses, upcoming deadlines, interviews, and offers. We will also prioritize readable text, clear labels, and an intuitive layout so students can efficiently manage their internship search regardless of their technical experience.
+
+
+Vision Statement
+For college students who need a convenient way to track internships and manage their applications. The InternshipTrackr is an internship tracking application that helps users stay organized by tracking application progress, deadlines, interviews, and offers. Unlike LinkedIn or Handshake, our product combines internship discovery with comprehensive application management tools, allowing students to navigate the entire internship search process in one place.
+
+
+Version Control: https://github.com/RileyAsmundson/InternshipTrackr/tree/main
+
+
+Development Methodology
+Our team will use an Agile approach, dividing the project into smaller sprints and assigning responsibilities to each team member. We will hold regular meetings to discuss progress, address challenges, and adjust our plans as needed throughout the four-week development period.
+
+
+Communication Plan
+Our team will use Microsoft Teams to communicate, coordinate tasks, and share updates throughout the project. We will also use Teams to discuss progress, address challenges, and communicate with our TA when needed.
+
+
+Meeting Plan
+Team Meetings: 
+* Mondays and Wednesdays: 4:30 - 5:30 PM, face-to-face,  Miramontes BACA Education Building 
+* Sundays: 12:00 PM - 2:00 PM, Zoom 
+Weekly meeting with TA:
+* Mondays from 12:45 PM - 1:00 PM, meet online
+
+
+Use Case Diagram 
+    - Attached in Lab 8 Img folder
+
+Wireframes
+    - Attached in Lab 8 Img folder
