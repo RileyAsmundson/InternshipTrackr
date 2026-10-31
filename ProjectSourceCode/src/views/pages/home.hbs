@@ -1,34 +1,77 @@
+
 <div class="homepage">
 
-  <!-- welcome header, need the name after it-->
-  <h1>Welcome Back!</h1>
+  <!-- welcome header, display user's name -->
+  <h1>Welcome Back{{#if username}}, {{username}}{{/if}}!</h1>
 
   <!-- boxes -->
   <div class="categories">
-    <div class="category-box">Applications</div>
-    <div class="category-box">Interviews</div>
-    <div class="category-box">Offers</div>
-    <div class="category-box">Upcoming Deadlines</div>
+
+    <div class="category-box">
+      <h3>Applications</h3>
+      <p>{{totalApplications}}</p>
+    </div>
+
+    <div class="category-box">
+      <h3>Interviews</h3>
+      <p>{{totalInterviews}}</p>
+    </div>
+
+    <div class="category-box">
+      <h3>Offers</h3>
+      <p>{{totalOffers}}</p>
+    </div>
+
+    <div class="category-box">
+      <h3>Upcoming Deadlines</h3>
+      <p>{{upcomingDeadlines}}</p>
+    </div>
+
   </div>
 
   <!-- bottom of the page, under the 4 boxes -->
   <div class="dashboard">
 
+    <!-- upcoming tasks -->
     <div class="tasks">
       <h2>Upcoming Tasks</h2>
-      <p></p>
+
+      <ul>
+        {{#each tasks}}
+          <li>
+            <strong>{{this.title}}</strong>
+            <p>{{this.dueDate}}</p>
+          </li>
+        {{else}}
+          <li>No upcoming tasks.</li>
+        {{/each}}
+      </ul>
     </div>
 
-  <!-- right now it's a list but need to color it and make it according to the circle like a pie chart -->
+    <!-- application status pie chart -->
     <div class="status">
       <h2>Application Status</h2>
-      <ul>
-        <li>Saved</li>
-        <li>Applied</li>
-        <li>Interviewing</li>
-        <li>Rejected</li>
-        <li>Offer</li>
-      </ul>
+
+      <div class="status-content">
+
+        <!-- pie chart -->
+        <div class="status-wheel"
+             style="background: {{statusGradient}};">
+        </div>
+
+        <!-- status list -->
+        <ul>
+          {{#each applicationStatuses}}
+            <li>
+              <span class="status-color"
+                    style="background-color: {{this.color}};">
+              </span>
+              {{this.name}}: {{this.count}}
+            </li>
+          {{/each}}
+        </ul>
+
+      </div>
     </div>
 
   </div>
