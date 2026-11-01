@@ -1,0 +1,42 @@
+<div class="container mt-4">
+  <h2>Browse Internships</h2>
+  <p>Find internship opportunities that interest you!</p>
+
+  <!-- Internship Search -->
+  <form action="/browse" method="GET">
+    <div class="mb-3">
+      <label for="search" class="form-label">
+        Search Internships
+      </label>
+      <input type="text" class="form-control"
+             id="search" name="search"
+             placeholder="Search by company or position">
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+      Search
+    </button>
+  </form>
+
+  <hr>
+
+  <!-- Internship Listings -->
+  <h3>Available Internships</h3>
+
+  {{#each internships}}
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5>{{this.role}}</h5>
+        <p>{{this.company}} - {{this.location}}</p>
+
+        <details>
+          <summary>View Details</summary>
+          <p>{{this.description}}</p>
+        </details>
+      </div>
+    </div>
+  {{else}}
+    <p>No internships found.</p>
+  {{/each}}
+
+</div>
