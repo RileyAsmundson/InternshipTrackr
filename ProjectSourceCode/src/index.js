@@ -2,9 +2,22 @@ const express = require('express');
 const { engine } = require('express-handlebars');
 const path = require('path');
 
+// NEW bcryptjs
+const pgp = require('pg-promise')();
+const bcrypt = require('bcryptjs');
+
 // Initialize Express
 const app = express();
 const PORT = 3000;
+
+// Database connection
+const db = pgp({
+  host: 'db',
+  port: 5432,
+  database: process.env.POSTGRES_DB,
+  user: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD
+});
 
 // Configure Handlebars
 app.engine('hbs', engine({
@@ -64,9 +77,53 @@ app.get('/login', (req, res) => {
   res.render('pages/login');
 });
 
+
 app.get('/register', (req, res) => {
   res.render('pages/register');
-});   
+});
+
+app.post('/register', async (req, res) => {
+
+  // Get information entered in register.hbs
+  const firstName = req.body.firstName;
+  const lastName = req.body.lastName;
+  const email = req.body.email;
+  const password = req.body.password;
+
+  try {
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Our database currently requires a username,
+    // so use the email as the username
+    const username = email;
+
+    // Save user to database
+    await db.none(
+      `INSERT INTO users
+       (username, password, email, first_name, last_name)
+       VALUES ($1, $2, $3, $4, $5)`,
+      [
+        username,
+        hashedPassword,
+        email,
+        firstName,
+        lastName
+      ]
+    );
+
+    // Successful registration
+    res.redirect('/login');
+
+  } catch (error) {
+
+    console.error('Registration Error:', error);
+
+    res.status(500).send('Registration failed');
+  }
+
+}); 
 
 app.get('/', (req, res) => {
   res.redirect('/home');
