@@ -43,6 +43,7 @@ app.get('/browse', (req, res) => {
     }
   ];
 
+
   // Filter by company, title, or location
   const search = typeof req.query.search === 'string'
     ? req.query.search.toLowerCase()
@@ -54,22 +55,30 @@ app.get('/browse', (req, res) => {
       .includes(search)
   );
 
-  res.render('pages/browse', { internships: results });
+//some (temporary) routes so the website works
+//(all able to be deleted if not needed, just so the website is fully functional for now) 
+res.render('pages/browse', { internships: results });
 });
 
+app.get('/login', (req, res) => {
+  res.render('pages/login');
+});
 
+app.get('/register', (req, res) => {
+  res.render('pages/register');
+});   
 
+app.get('/', (req, res) => {
+  res.redirect('/login');
+});
 
+app.get('/home', (req, res) => {
+  res.render('pages/home');
+});
 
-
-
-
-
-
-
-
-
-
+app.get('/tracker', (req, res) => {
+  res.status(500).send('Something went wrong, page not made yet');
+});
 
 
 // home page/ dashboard. will need to change the names maybe but basic for rn

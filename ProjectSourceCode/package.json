@@ -4,7 +4,9 @@
   "description": "Internship tracking application for college students",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js"
+    "prestart": "npm install",
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
   },
   "private": true,
   "dependencies": {
