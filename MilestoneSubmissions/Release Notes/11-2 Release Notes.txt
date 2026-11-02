@@ -9,10 +9,11 @@ COMPLETED UPDATES
 - Expanded the home page layout and added styling for the application-status pie chart.
 - Added an initial dashboard route to retrieve and summarize a user's applications, interviews, and offers. Database and session integration still needs testing.
 
-3. Navigation (November 1)
+3. Navigation (November 1-2)
 - Refactored the navigation bar using Bootstrap components.
 - Updated the main layout to use the nav partial.
 - Added a registration link to navigation.
+- Added correct routes so navbar is fully functional
 
 4. Internship browsing (November 1 - November 2)
 - Created browse.hbs with an initial internship listing layout.
