@@ -171,6 +171,45 @@ button {
     color: var(--muted);
 }
 
+
+/* pie chart, may remove later or fix but for rn i think it gotta be here. */
+
+.status-content {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-top: 25px;
+}
+
+.status-wheel {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background-color: #e1e7ef;
+}
+
+.status-color {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    margin-right: 8px;
+}
+
+.status-content ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.status-content li {
+    display: flex;
+    align-items: center;
+    padding: 6px 0;
+    color: var(--muted);
+}
+
 /* Responsive Design */
 
 @media (max-width: 768px) {
