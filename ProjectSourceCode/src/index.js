@@ -1,3 +1,30 @@
+const express = require('express');
+const { engine } = require('express-handlebars');
+const path = require('path');
+
+// Initialize Express
+const app = express();
+const PORT = 3000;
+
+// Configure Handlebars
+app.engine('hbs', engine({
+  extname: '.hbs',
+  defaultLayout: 'main'
+}));
+
+app.set('view engine', 'hbs');
+app.set('views', path.join(__dirname, 'views'));
+
+// Serve CSS, JavaScript, and images
+app.use('/resources',
+  express.static(path.join(__dirname, 'resources'))
+);
+
+// Allow Express to process form data
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+
 app.get('/browse', (req, res) => {
 
   // Temporary internship data
@@ -149,4 +176,10 @@ app.get('/home', async (req, res) => {
     console.error('Home Dashboard Error:', error);
     res.status(500).send('Error loading dashboard');
   }
+});
+
+
+// Start the Express server
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
 });
