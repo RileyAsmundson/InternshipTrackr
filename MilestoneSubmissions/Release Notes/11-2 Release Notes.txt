@@ -1,0 +1,33 @@
+Reporting period: Since the previous meeting October 26, 2026 through November 2, 2026
+
+COMPLETED UPDATES
+
+1. Project setup (October 28)
+- Added the initial Docker configuration for the Node.js web application and PostgreSQL database.
+
+2. Home dashboard (October 31-November 1)
+- Expanded the home page layout and added styling for the application-status pie chart.
+- Added an initial dashboard route to retrieve and summarize a user's applications, interviews, and offers. Database and session integration still needs testing.
+
+3. Navigation (November 1)
+- Refactored the navigation bar using Bootstrap components.
+- Updated the main layout to use the nav partial.
+- Added a registration link to navigation.
+
+4. Internship browsing (November 1 - November 2)
+- Created browse.hbs with an initial internship listing layout.
+- Added a /browse route with temporary internship data and keyword search.
+- Set up Express, Handlebars, the server start command, and required npm dependencies.
+- Tested the browsing page locally with Docker and confirmed the route loads.
+
+SOURCE-CODE STATUS
+- The November 1 updates shown in the commit history are on main.
+- The November 2 server/package changes were pushed to feature/browse-internships; they still need pull-request review and merging into main.
+
+NEXT STEPS
+- Review and merge the browsing feature branch; confirm the combined main branch runs successfully.
+- Implement and test registration, login/logout, password hashing, and sessions.
+- Connect application, dashboard, and browsing features to PostgreSQL.
+- Build application status tracking, interview/deadline management, calendar views, and offer tracking.
+- Keep GitHub issues and project-board statuses current.
+
