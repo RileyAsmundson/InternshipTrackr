@@ -2,22 +2,15 @@ const express = require('express');
 const { engine } = require('express-handlebars');
 const path = require('path');
 
-// NEW bcryptjs
-const pgp = require('pg-promise')();
+// Database connection
+const { db } = require('./db');
+
+// Password hashing
 const bcrypt = require('bcryptjs');
 
 // Initialize Express
 const app = express();
 const PORT = 3000;
-
-// Database connection
-const db = pgp({
-  host: 'db',
-  port: 5432,
-  database: process.env.POSTGRES_DB,
-  user: process.env.POSTGRES_USER,
-  password: process.env.POSTGRES_PASSWORD
-});
 
 // Configure Handlebars
 app.engine('hbs', engine({
