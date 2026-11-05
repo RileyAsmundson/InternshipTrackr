@@ -6,7 +6,8 @@
   "scripts": {
     "prestart": "npm install",
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "test": "mocha --timeout 10000 \"test/**/*.spec.js\""
   },
   "private": true,
   "dependencies": {
