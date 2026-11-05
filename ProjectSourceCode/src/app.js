@@ -8,6 +8,9 @@ const { db } = require('./db');
 // Password hashing
 const bcrypt = require('bcryptjs');
 
+// Registration validation
+const validateRegistration = require('./validateRegistration');
+
 // Initialize Express
 const app = express();
 
@@ -75,6 +78,10 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
+  // Validate registration information before processing
+  if (!validateRegistration(req.body)) {
+    return res.status(400).send('Invalid input');
+  } 
 
   // Get information entered in register.hbs
   const firstName = req.body.firstName;

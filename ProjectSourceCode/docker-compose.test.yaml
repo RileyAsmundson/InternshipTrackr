@@ -11,7 +11,7 @@ services:
       start_period: 10s
     volumes:
       - lab10-test-db:/var/lib/postgresql/data
-      - ./src/init_data:/docker-entrypoint-initdb.d:ro
+      - ./init_data:/docker-entrypoint-initdb.d:ro
   tests:
     image: node:22.19.0-bookworm
     working_dir: /repository
