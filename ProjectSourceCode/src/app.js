@@ -63,11 +63,11 @@ app.get('/browse', (req, res) => {
       .includes(search)
   );
 
-//some (temporary) routes so the website works
-//(all able to be deleted if not needed, just so the website is fully functional for now) 
+
 res.render('pages/browse', { internships: results });
 });
-
+//some (temporary) routes so the website works
+//(all able to be deleted if not needed, just so the website is fully functional for now) 
 app.get('/login', (req, res) => {
   res.render('pages/login');
 });
@@ -75,6 +75,10 @@ app.get('/login', (req, res) => {
 
 app.get('/register', (req, res) => {
   res.render('pages/register');
+});
+
+app.get('/calendar', (req, res) => {
+  res.render('pages/calendar');
 });
 
 app.post('/register', async (req, res) => {
@@ -243,8 +247,26 @@ app.get('/home', async (req, res) => {
   }
 });
 
-app.get('/welcome', (req, res) => {
-  res.json({ status: 'success', message: 'Welcome!' });
-});
+//calender route for adding events to the calendar
+app.post, async('/calendar', (req, res) => {
+  const { title, date, time } = req.body;
 
+  // Validate input
+  if (!title || !date || !time) {
+    return res.status(400).json({ status: 'error', message: 'Missing required fields' });
+  }
+
+  // Save event to database
+  try {
+    await db.none(
+      `INSERT INTO events (title, date, time) VALUES ($1, $2, $3)`,
+      [title, date, time]
+    );
+  } catch (error) {
+    console.error('Error saving event:', error);
+    return res.status(500).json({ status: 'error', message: 'Failed to save event' });
+  }
+
+  res.json({ status: 'success', message: 'Event added successfully' });
+});
 module.exports = app;
