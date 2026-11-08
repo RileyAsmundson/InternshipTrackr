@@ -56,7 +56,17 @@
   </div>
 
   {{else}}
-    <p>No internships found.</p>
+    <!-- No Search Results -->
+    <div class="alert alert-info text-center">
+      <h5>No internships found</h5>
+      <p>
+        Try searching for a different company,
+        position, or location.
+      </p>
+      <a href="/browse" class="btn btn-outline-primary">
+        View All Internships
+      </a>
+    </div>
   {{/each}}
 
 </div>
