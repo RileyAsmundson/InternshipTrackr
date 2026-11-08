@@ -182,6 +182,36 @@ app.get('/home', async (req, res) => {
       app => String(app.status).toLowerCase() === 'offer'
     ).length;
 
+
+    // upcoming deadlines
+    const deadlineResult = await db.query(
+      `SELECT COUNT(*) AS total
+       FROM deadlines
+       WHERE user_id = $1
+         AND completed = FALSE
+         AND deadline_date >= CURRENT_DATE
+         AND deadline_date < CURRENT_DATE + INTERVAL '14 days'`,
+      [username]
+    );
+
+    const upcomingDeadlines = Number(deadlineResult[0].total);
+
+    // upcoming tasks
+    const tasks = await db.query(
+      `SELECT id,
+              title,
+              TO_CHAR(deadline_date, 'Mon DD, YYYY') AS "dueDate"
+       FROM deadlines
+       WHERE user_id = $1
+         AND completed = FALSE
+         AND deadline_date >= CURRENT_DATE
+       ORDER BY deadline_date ASC
+       LIMIT 10`,
+      [username]
+    );
+
+
+
     // status categories
     const applicationStatuses = [
       { name: 'Saved', count: 0, color: '#3498db' },
@@ -228,18 +258,27 @@ app.get('/home', async (req, res) => {
       ? `conic-gradient(${slices.join(', ')})`
       : 'conic-gradient(#e1e7ef 0% 100%)';
 
+
     // to home.hbs
     res.render('pages/home', {
       username: firstName,
       totalApplications,
       totalInterviews,
       totalOffers,
+      upcomingDeadlines,
+      tasks,
       applicationStatuses,
       statusGradient
     });
+
 
   } catch (error) {
     console.error('Home Dashboard Error:', error);
     res.status(500).send('Error loading dashboard');
   }
+});
+
+// Start the server
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
 });
