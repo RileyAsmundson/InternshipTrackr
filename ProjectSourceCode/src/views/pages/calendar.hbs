@@ -2,9 +2,13 @@
   <h2>Monthly Calender</h2>
   <div class="calender-content">
     <div class="calender-header">
-      <button id="prev-month">&#8249;</button>
+      <a class="btn btn-outline-primary" id="prev-month"
+         href="/calendar?year={{previousMonth.year}}&amp;month={{previousMonth.month}}"
+         aria-label="Previous month">&#8249;</a>
       <h3 id="month-year">{{monthYear}}</h3>
-      <button id="next-month">&#8250;</button>
+      <a class="btn btn-outline-primary" id="next-month"
+         href="/calendar?year={{nextMonth.year}}&amp;month={{nextMonth.month}}"
+         aria-label="Next month">&#8250;</a>
     </div>
    <button type="button" class="btn btn-primary"
         data-bs-toggle="modal" data-bs-target="#create-modal">
@@ -43,29 +47,32 @@
         <div class="modal-footer">
           <button type="submit" class="btn btn-primary">Add</button>
         </div>
-      </form>
     </div>
   </div>
 </div>
+  </div>
     <div class="calender-body">
 
-    <table class="calender-table">
-      <thead>
-        <tr>
-          {{#each weekDays}}
-            <th>{{this}}</th>
-          {{/each}}
-        </tr>
-      </thead>
-      <tbody>
-        {{#each weeks}}
-          <tr>
-            {{#each this}}
-              <td class="{{#if this.isCurrentMonth}}current-month{{else}}other-month{{/if}}">
-                {{this.date}}
-              </td>
-            {{/each}}
-          </tr>
+    <table class="table table-bordered text-center align-middle">
+  <thead>
+    <tr>
+      {{#each weekDays}}
+        <th scope="col">{{this}}</th>
+      {{/each}}
+    </tr>
+  </thead>
+  <tbody>
+    {{#each weeks}}
+      <tr>
+        {{#each this}}
+          <td class="{{#unless this.isCurrentMonth}}text-muted{{/unless}}">
+            {{this.date}}
+          </td>
         {{/each}}
-      </tbody>
-    </table>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+    </div>
+  </div>
+</div>
