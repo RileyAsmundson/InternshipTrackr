@@ -5,6 +5,9 @@
 
   <!-- Login form -->
   <div class="login-container">
+    {{#if error}}
+       <p class="alert alert-danger" role="alert">{{error}}</p>
+    {{/if}}
     <form action="/login" method="POST">
 
       <!-- Email input -->
