@@ -65,39 +65,152 @@ app.use((req, res, next) => {
 // Register the login and logout routes.
 app.use(authRoutes);
 
-app.get('/browse', (req, res) => {
 
-  // Temporary internship data
-  const internships = [
-    {
-      company: 'Deloitte',
-      role: 'Technology Consulting Intern',
-      location: 'Denver, CO',
-      description: 'Work on technology consulting projects.'
-    },
-    {
-      company: 'Microsoft',
-      role: 'Business Analyst Intern',
-      location: 'Redmond, WA',
-      description: 'Analyze business data and support decisions.'
-    }
-  ];
+const browseCache = new Map();
+const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
 
+app.get('/browse', async (req, res) => {
 
-  // Filter by company, title, or location
+  // Read search filters from the URL
   const search = typeof req.query.search === 'string'
-    ? req.query.search.toLowerCase()
+    ? req.query.search.trim().slice(0, 100)
     : '';
 
-  const results = internships.filter(job =>
-    (job.company + ' ' + job.role + ' ' + job.location)
-      .toLowerCase()
-      .includes(search)
-  );
+  const company = typeof req.query.company === 'string'
+    ? req.query.company.trim().slice(0, 100)
+    : '';
 
+  const stateInput = typeof req.query.state === 'string'
+    ? req.query.state.trim().toUpperCase()
+    : '';
 
-res.render('pages/browse', { internships: results });
+  const state = /^[A-Z]{2}$/.test(stateInput)
+    ? stateInput
+    : '';
+
+  const cacheKey = JSON.stringify([search, company, state]);
+
+  try {
+    let internships;
+    const cached = browseCache.get(cacheKey);
+
+    if (cached &&
+        Date.now() - cached.time < CACHE_DURATION) {
+      internships = cached.data;
+
+    } else {
+      // Build the Headcount Labs API request
+      const params = new URLSearchParams({
+        title_advanced: '(intern OR internship OR internships)',
+        country: 'US',
+        currentness: 'current',
+        stale: 'false',
+        has_application_url: 'true',
+        limit: '30'
+      });
+
+      if (search) params.set('q', search);
+      if (company) params.set('company', company);
+      if (state) params.set('state', state);
+
+      const apiKey = process.env.HEADCOUNTLABS_API_KEY;
+
+      if (!apiKey) {
+        throw new Error('Headcount Labs API key is missing');
+      }
+
+      const response = await fetch(
+        `https://api.headcountlabs.com/v1/jobs?${params}`,
+        {
+          headers: {
+            Authorization: `Bearer ${apiKey}`
+          },
+          signal: AbortSignal.timeout(15000)
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (!Array.isArray(result.data)) {
+        throw new Error('Unexpected API response');
+      }
+
+      // Convert API records into internship cards
+      internships = result.data.map(job => {
+
+        const posting = job.postings?.find(p =>
+          p.posting_status === 'listed' &&
+          p.application_url?.state === 'known' &&
+          /^https?:\/\//.test(p.application_url.value)
+        );
+
+        if (!posting ||
+            job.title?.state !== 'known' ||
+            job.employer_name?.state !== 'known') {
+          return null;
+        }
+
+        const locationData =
+          posting.location?.state === 'known'
+            ? posting.location.value
+            : job.locations?.find(l => l.state === 'known')?.value;
+
+        const region = locationData?.state ||
+          locationData?.region?.replace(/^US-/, '');
+
+        const location = [
+          locationData?.city,
+          region
+        ].filter(Boolean).join(', ') || 'Not specified';
+
+        const description = job.description?.state === 'known'
+          ? job.description.value
+          : '';
+
+        return {
+          id: job.job_id,
+          company: job.employer_name.value,
+          role: job.title.value,
+          location,
+          description: description
+            ? description.slice(0, 250) +
+              (description.length > 250 ? '...' : '')
+            : 'No description available.',
+          applicationUrl: posting.application_url.value
+        };
+      }).filter(Boolean);
+
+      // Save results temporarily to reduce API usage
+      browseCache.set(cacheKey, {
+        time: Date.now(),
+        data: internships
+      });
+    }
+
+    res.render('pages/browse', {
+      internships,
+      search,
+      company,
+      state
+    });
+
+  } catch (error) {
+    console.error('Headcount Labs Error:', error);
+
+    res.status(502).render('pages/browse', {
+      internships: [],
+      search,
+      company,
+      state,
+      error: 'Unable to load internships right now.'
+    });
+  }
 });
+
 //some (temporary) routes so the website works
 //(all able to be deleted if not needed, just so the website is fully functional for now) 
 app.get('/login', (req, res) => {
