@@ -212,9 +212,6 @@ app.get('/', (req, res) => {
   res.redirect('/home');
 });
 
-app.get('/home', (req, res) => {
-  res.render('pages/home');
-});
 
 app.get('/tracker', (req, res) => {
   res.render('pages/tracker');
@@ -222,10 +219,11 @@ app.get('/tracker', (req, res) => {
 
 // home page/ dashboard. will need to change the names maybe but basic for rn
 
+
 app.get('/home', async (req, res) => {
   try {
     //  user
-    const username = req.session.username;
+    const username = req.session?.username;
 
     if (!username) {
       return res.redirect('/login');
@@ -237,11 +235,11 @@ app.get('/home', async (req, res) => {
       [username]
     );
 
-    if (userResult.rows.length === 0) {
+    if (userResult.length === 0) {
       return res.status(404).send('User not found');
     }
 
-    const firstName = userResult.rows[0].first_name;
+    const firstName = userResult[0].first_name;
 
     //  user's applications
     const applicationResult = await db.query(
@@ -249,7 +247,7 @@ app.get('/home', async (req, res) => {
       [username]
     );
 
-    const applications = applicationResult.rows;
+    const applications = applicationResult;
 
     //  total interviews
     const interviewResult = await db.query(
@@ -259,11 +257,39 @@ app.get('/home', async (req, res) => {
 
     // dashboard numbers 
     const totalApplications = applications.length;
-    const totalInterviews = Number(interviewResult.rows[0].total);
+    const totalInterviews = Number(interviewResult[0].total);
 
     const totalOffers = applications.filter(
-      app => app.status === 'Offer'
+      app => String(app.status).toLowerCase() === 'offer'
     ).length;
+
+    // upcoming deadlines
+    const deadlineResult = await db.query(
+      `SELECT COUNT(*) AS total
+       FROM deadlines
+       WHERE user_id = $1
+         AND completed = FALSE
+         AND deadline_date >= CURRENT_DATE
+         AND deadline_date < CURRENT_DATE + INTERVAL '14 days'`,
+      [username]
+    );
+
+    const upcomingDeadlines = Number(deadlineResult[0].total);
+
+    // upcoming tasks
+    const tasks = await db.query(
+      `SELECT id,
+              title,
+              TO_CHAR(deadline_date, 'Mon DD, YYYY') AS "dueDate",
+              (deadline_date - CURRENT_DATE) AS "daysLeft"
+       FROM deadlines
+       WHERE user_id = $1
+         AND completed = FALSE
+         AND deadline_date >= CURRENT_DATE
+       ORDER BY deadline_date ASC
+       LIMIT 10`,
+      [username]
+    );
 
     // status categories
     const applicationStatuses = [
@@ -277,7 +303,8 @@ app.get('/home', async (req, res) => {
     // each application status
     applications.forEach(app => {
       const status = applicationStatuses.find(
-        item => item.name === app.status
+        item => item.name.toLowerCase() ===
+          String(app.status).toLowerCase()
       );
 
       if (status) {
@@ -316,6 +343,8 @@ app.get('/home', async (req, res) => {
       totalApplications,
       totalInterviews,
       totalOffers,
+      upcomingDeadlines,
+      tasks,
       applicationStatuses,
       statusGradient
     });
@@ -325,6 +354,7 @@ app.get('/home', async (req, res) => {
     res.status(500).send('Error loading dashboard');
   }
 });
+
 
 //calender route for adding events to the calendar
 app.post('/calendar', async (req, res) => {
