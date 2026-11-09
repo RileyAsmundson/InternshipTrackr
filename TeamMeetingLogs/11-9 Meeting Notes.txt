@@ -1,0 +1,24 @@
+Meeting Date: 11/09/2026
+Meeting Time/Location: 12:45 PM on Zoom
+Scribe: Eder Santillan
+
+1. Decisions Made
+
+- Reviewed the team's progress, including completed registration/login, application tracker, and calendar features.
+- Agreed to prioritize free APIs for internship listings, with web scraping as an alternative if necessary.
+- Confirmed that placeholder database entries can be used for development and unit testing.
+- Emphasized keeping the main branch functional and ensuring all features can be demonstrated during future meetings.
+
+2. Alternative Actions/Options Discussed
+
+- Discussed alternatives to the JSearch API due to its limited free requests and potential paywall.
+- Considered using web scraping or storing internship listings directly in the database if a suitable API cannot be found.
+- Discussed improving website styling and integrating existing features before the final project deadline.
+
+3. Follow-Up Items, Roles, and Responsibilities
+
+Riley: Research free internship listing APIs and finalize an approach for the browsing feature.
+Emma: Connect the application tracker page to the database to save and retrieve applications.
+Vishnu: Pull the latest changes, resolve testing issues, and complete the deadlines feature.
+Eder: Submit meeting notes and ensure completed registration/login functionality is available for integration.
+All Members: Update the GitHub project board and release notes, integrate remaining features, and prepare working demonstrations for the next meeting.
