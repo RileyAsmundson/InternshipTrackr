@@ -63,11 +63,11 @@ app.get('/browse', (req, res) => {
       .includes(search)
   );
 
-//some (temporary) routes so the website works
-//(all able to be deleted if not needed, just so the website is fully functional for now) 
+
 res.render('pages/browse', { internships: results });
 });
-
+//some (temporary) routes so the website works
+//(all able to be deleted if not needed, just so the website is fully functional for now) 
 app.get('/login', (req, res) => {
   res.render('pages/login');
 });
@@ -75,6 +75,54 @@ app.get('/login', (req, res) => {
 
 app.get('/register', (req, res) => {
   res.render('pages/register');
+});
+
+app.get('/calendar', (req, res) => {
+  const today = new Date();
+  const requestedYear = Number(req.query.year);
+  const requestedMonth = Number(req.query.month);
+  const year = Number.isInteger(requestedYear) && requestedYear >= 100 && requestedYear <= 9999
+    ? requestedYear
+    : today.getFullYear();
+  const month = Number.isInteger(requestedMonth) && requestedMonth >= 1 && requestedMonth <= 12
+    ? requestedMonth - 1
+    : today.getMonth();
+
+  const firstWeekday = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const cellCount = Math.ceil((firstWeekday + daysInMonth) / 7) * 7;
+  const cells = Array.from({ length: cellCount }, (_, index) => {
+    const date = new Date(year, month, index - firstWeekday + 1);
+    return {
+      date: date.getDate(),
+      isCurrentMonth: date.getMonth() === month
+    };
+  });
+  const weeks = [];
+
+  for (let index = 0; index < cells.length; index += 7) {
+    weeks.push(cells.slice(index, index + 7));
+  }
+
+  const previousMonth = new Date(year, month - 1, 1);
+  const nextMonth = new Date(year, month + 1, 1);
+
+  res.render('pages/calendar', {
+    monthYear: new Date(year, month, 1).toLocaleDateString('en-US', {
+      month: 'long',
+      year: 'numeric'
+    }),
+    weekDays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    weeks,
+    previousMonth: {
+      year: previousMonth.getFullYear(),
+      month: previousMonth.getMonth() + 1
+    },
+    nextMonth: {
+      year: nextMonth.getFullYear(),
+      month: nextMonth.getMonth() + 1
+    }
+  });
 });
 
 app.post('/register', async (req, res) => {
@@ -242,8 +290,48 @@ app.get('/home', async (req, res) => {
   }
 });
 
-app.get('/welcome', (req, res) => {
-  res.json({ status: 'success', message: 'Welcome!' });
+//calender route for adding events to the calendar
+app.post('/calendar', async (req, res) => {
+  const { title, date, time } = req.body;
+
+
 });
+
+//calender route for setting up the calendar page
+app.get('/calendar', (req, res) => {
+  const today = new Date();
+  const year = Number(req.query.year) || today.getFullYear();
+  const requestedMonth = Number(req.query.month);
+  const month = Number.isInteger(requestedMonth) && requestedMonth >= 1 && requestedMonth <= 12
+    ? requestedMonth - 1
+    : today.getMonth();
+
+  const firstWeekday = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const cellCount = Math.ceil((firstWeekday + daysInMonth) / 7) * 7;
+
+  const cells = Array.from({ length: cellCount }, (_, index) => {
+    const date = new Date(year, month, index - firstWeekday + 1);
+    return {
+      date: date.getDate(),
+      isCurrentMonth: date.getMonth() === month
+    };
+  });
+
+  const weeks = [];
+  for (let i = 0; i < cells.length; i += 7) {
+    weeks.push(cells.slice(i, i + 7));
+  }
+
+  res.render('pages/calendar', {
+    monthYear: new Date(year, month, 1).toLocaleDateString('en-US', {
+      month: 'long',
+      year: 'numeric'
+    }),
+    weekDays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    weeks
+  });
+});
+
 
 module.exports = app;
