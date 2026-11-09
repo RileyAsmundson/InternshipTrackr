@@ -200,7 +200,8 @@ app.get('/home', async (req, res) => {
     const tasks = await db.query(
       `SELECT id,
               title,
-              TO_CHAR(deadline_date, 'Mon DD, YYYY') AS "dueDate"
+              TO_CHAR(deadline_date, 'Mon DD, YYYY') AS "dueDate",
+              (deadline_date - CURRENT_DATE) AS "daysLeft"
        FROM deadlines
        WHERE user_id = $1
          AND completed = FALSE
