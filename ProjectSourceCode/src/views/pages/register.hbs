@@ -7,6 +7,10 @@
   <div class="register-container">
     <h2>Create Account</h2>
 
+    {{#if error}}
+      <p class="alert alert-danger" role="alert">{{error}}</p>
+    {{/if}}
+    
     <form action="/register" method="POST">
 
       <!-- First name input -->
@@ -37,6 +41,13 @@
       <button type="submit">Register</button>
 
     </form>
+
+    <!-- Link for existing users -->
+    <p>
+      Already have an account?
+      <a href="/login">Log in</a>
+    </p>
+
   </div>
 
 </div>

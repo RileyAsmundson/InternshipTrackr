@@ -1,0 +1,72 @@
+# InternshipTrackr — Weekly Release Notes
+
+**Reporting Period:** November 2, 2026 – November 9, 2026
+
+## COMPLETED UPDATES
+
+**1. Automated Testing and Backend Structure (November 5–9)**
+- Completed Part A of Lab 10, adding automated testing functionality.
+- Moved Express routes and configuration from `index.js` to `app.js`.
+- Added a shared PostgreSQL database connection.
+- Created a separate Docker environment for automated testing.
+- Implemented registration validation and automated unit/integration tests.
+- Verified that all four tests pass and the website continues running correctly.
+- Added testing documentation in `test/README.md`.
+- Merged Pull Request #17 into main.
+
+**2. Calendar Feature (November 6–9)**
+- Created an initial calendar wireframe.
+- Implemented a monthly calendar display.
+- Added navigation between months.
+- Integrated the calendar changes into the main project.
+- Merged Pull Request #18 into main.
+
+**3. Internship Browsing Improvements (November 8–9)**
+- Improved the Browse Internships page layout and user interface.
+- Refined the internship search experience.
+- Added handling for searches with no matching results.
+- Merged Pull Request #19 into main.
+
+**4. My Applications Page (November 9)**
+- Created the My Applications page, replacing the previous placeholder.
+- Added an interactive form for entering internship applications.
+- Implemented an application table displaying company, position, location, application status, and date applied.
+- Added editable application statuses, including Saved, Applied, Interviewing, Offer, and Rejected.
+- Implemented browser local storage to retain application information after refreshing.
+- Tested the form, application table, and status functionality locally using Docker.
+- Merged Pull Request #20 into main.
+
+## SOURCE-CODE STATUS
+
+- Pull Requests #17, #18, #19, and #20 have been merged into main.
+- Automated testing, calendar functionality, internship browsing improvements, and the My Applications frontend have been integrated into the main project.
+- The My Applications page currently uses browser local storage and still needs PostgreSQL integration.
+- The home dashboard and deadline-tracking updates are currently in an open feature branch (Pull Request #21).
+- Additional integration testing is needed to confirm that all merged features work together.
+
+## IN PROGRESS
+
+**1. Home Dashboard and Deadline Tracking**
+- Continued development of the home dashboard and related interface improvements.
+- Added initial deadline-tracking functionality.
+- Made additional dashboard visual updates.
+- Changes have been pushed to `feature/home-dashboard` and submitted through Pull Request #21.
+- Awaiting conflict resolution, review, and merging into main.
+
+**2. Database Integration**
+- Connect application tracking and status updates to PostgreSQL.
+- Continue integrating database-backed functionality across the application.
+
+**3. Authentication and User Management**
+- Continue implementing and testing user login/logout and session functionality.
+- Verify the registration process and database integration.
+
+## NEXT STEPS
+
+- Review and merge the home dashboard and deadline-tracking feature branch.
+- Connect My Applications and other relevant features to PostgreSQL.
+- Complete login/logout and session management.
+- Test the calendar, dashboard, application tracker, and internship browsing features together.
+- Expand automated tests for newly integrated functionality.
+- Continue developing deadline management, interview tracking, and other remaining user stories.
+- Update GitHub issues and project-board statuses to reflect completed and outstanding work.

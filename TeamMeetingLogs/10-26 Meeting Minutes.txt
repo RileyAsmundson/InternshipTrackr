@@ -1,0 +1,15 @@
+Meeting Date: 10/26/2026
+Meeting Time/Location: 12:45 PM on Zoom
+Scribe: Riley Asmundson
+
+1. Decisions Made
+- Reviewed the weekly grading criteria and expectations for the group project.
+- Agreed to maintain consistent GitHub contributions, and keep the main branch functional.
+
+2. Alternative Actions/Options Discussed
+- No major alternatives were discussed, as the meeting primarily focused on understanding the grading process and weekly requirements.
+
+3. Follow-Up Items, Roles, and Responsibilities
+- Each team member will make regular commits and update their assigned user stories.
+- The team will prepare weekly release notes before TA meetings and submit meeting minutes afterward.
+- All members will continue developing their assigned features and prepare to demonstrate progress at the next meeting.g
