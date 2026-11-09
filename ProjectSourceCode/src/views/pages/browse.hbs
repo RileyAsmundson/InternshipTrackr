@@ -13,15 +13,40 @@
       Search by company, position, or location
     </label>
 
-    <div class="input-group">
+    <div class="mb-2">
       <input type="text" class="form-control"
             id="search" name="search"
             placeholder="e.g. Deloitte, Analyst, Denver">
+            value="{{search}}">
 
-      <button type="submit" class="btn btn-primary">
-        Search
-      </button>
     </div>
+
+    <!-- Additional Internship Filters -->
+    <div class="row g-2 mb-2">
+      <!-- Company Filter -->
+      <div class="col-md-6">
+        <label for="company" class="form-label">Company</label>
+        <input type="text" class="form-control"
+              id="company" name="company"
+              placeholder="e.g. Deloitte"
+              value="{{company}}">
+      </div>
+
+      <!-- State Filter -->
+      <div class="col-md-6">
+        <label for="state" class="form-label">State</label>
+        <input type="text" class="form-control"
+              id="state" name="state"
+              placeholder="e.g. CO"
+              maxlength="2"
+              value="{{state}}">
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+      Search
+    </button>
+
   </form>
 
   <div class="mt-2">
@@ -31,6 +56,13 @@
   </div>
 
   <hr>
+
+  <!-- API Error Message -->
+  {{#if error}}
+    <div class="alert alert-danger">
+      {{error}}
+    </div>
+  {{else}}
 
   <!-- Internship Listings -->
   <h3>Available Internships</h3>
@@ -52,6 +84,15 @@
           <summary>View Details</summary>
           <p>{{this.description}}</p>
         </details>
+        <!-- Application Link -->
+        {{#if this.applicationUrl}}
+          <a href="{{this.applicationUrl}}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-primary mt-3">
+            View Application
+          </a>
+        {{/if}}
     </div>
   </div>
 
@@ -68,5 +109,5 @@
       </a>
     </div>
   {{/each}}
-
+{{/if}}
 </div>
