@@ -1,0 +1,78 @@
+<div class="calender">
+  <h2>Monthly Calender</h2>
+  <div class="calender-content">
+    <div class="calender-header">
+      <a class="btn btn-outline-primary" id="prev-month"
+         href="/calendar?year={{previousMonth.year}}&amp;month={{previousMonth.month}}"
+         aria-label="Previous month">&#8249;</a>
+      <h3 id="month-year">{{monthYear}}</h3>
+      <a class="btn btn-outline-primary" id="next-month"
+         href="/calendar?year={{nextMonth.year}}&amp;month={{nextMonth.month}}"
+         aria-label="Next month">&#8250;</a>
+    </div>
+   <button type="button" class="btn btn-primary"
+        data-bs-toggle="modal" data-bs-target="#create-modal">
+  Add Interview
+</button>
+
+<div id="create-modal" class="modal fade" tabindex="-1"
+     aria-labelledby="create-modal-title" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="create-modal-title" class="modal-title">Add Interview</h2>
+        <button type="button" class="btn-close"
+                data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <form action="/calendar" method="POST" id="create-form">
+        <div class="modal-body">
+            <div class="mb-3">
+              <label for="company" class="form-label">Company</label>
+              <input type="text" class="form-control" id="company">
+            </div>
+            <div class="mb-3">
+              <label for="interview-date" class="form-label">Date</label>
+              <input type="date" class="form-control" id="interview-date" required>
+            </div>
+            <div class="mb-3">
+              <label for="interview-time" class="form-label">Time</label>
+              <input type="time" class="form-control" id="interview-time" required>
+            </div>
+            <div class="mb-3">
+              <label for="interview-location" class="form-label">Location</label>
+              <input type="text" class="form-control" id="interview-location">
+            </div>  
+        </form>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Add</button>
+        </div>
+    </div>
+  </div>
+</div>
+  </div>
+    <div class="calender-body">
+
+    <table class="table table-bordered text-center align-middle">
+  <thead>
+    <tr>
+      {{#each weekDays}}
+        <th scope="col">{{this}}</th>
+      {{/each}}
+    </tr>
+  </thead>
+  <tbody>
+    {{#each weeks}}
+      <tr>
+        {{#each this}}
+          <td class="{{#unless this.isCurrentMonth}}text-muted{{/unless}}">
+            {{this.date}}
+          </td>
+        {{/each}}
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+    </div>
+  </div>
+</div>
