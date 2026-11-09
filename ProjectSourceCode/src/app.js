@@ -2,6 +2,10 @@ const express = require('express');
 const { engine } = require('express-handlebars');
 const path = require('path');
 
+// Session authentication  
+const session = require('express-session');
+const authRoutes = require('./auth');
+
 // Database connection
 const { db } = require('./db');
 
@@ -32,6 +36,34 @@ app.use('/resources',
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+if (!process.env.SESSION_SECRET) {
+  throw new Error(
+    'Set SESSION_SECRET in your local .env or .env.test'
+  );
+}
+
+// Session configuration for local development and lab testing.
+app.use(session({
+  name: 'internshiptrackr.sid',
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 60 * 60 * 1000
+  }
+}));
+
+// Make login status available to Handlebars templates.
+app.use((req, res, next) => {
+  res.locals.isLoggedIn = Boolean(req.session.username);
+  next();
+});
+
+// Register the login and logout routes.
+app.use(authRoutes);
 
 app.get('/browse', (req, res) => {
 
@@ -164,9 +196,13 @@ app.post('/register', async (req, res) => {
     res.redirect('/login');
 
   } catch (error) {
-
+    // reject an email that is already registered 
+    if (error.code === '23505'){
+      return res.status(409).render('pages/register', {
+        error: 'An account with this email already exists.'
+      });
+    }
     console.error('Registration Error:', error);
-
     res.status(500).send('Registration failed');
   }
 
