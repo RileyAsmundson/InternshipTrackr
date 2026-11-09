@@ -1,0 +1,167 @@
+
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1>My Applications</h1>
+      <p class="text-muted">Track and manage your internship applications.</p>
+    </div>
+    <button type="button" class="btn btn-primary" id="addApplicationBtn">
+      + Add Application
+    </button>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <h4>Application Tracker</h4>
+      <div class="table-responsive">
+        <table class="table table-hover mt-3">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Position</th>
+              <th>Location</th>
+              <th>Status</th>
+              <th>Date Applied</th>
+            </tr>
+          </thead>
+          <tbody id="applicationsTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<dialog id="applicationDialog" style="border: 1px solid #ddd; border-radius: 10px; padding: 25px; width: min(450px, 90%);">
+  <h3 class="mb-3">Add Application</h3>
+
+  <form id="applicationForm">
+    <div class="mb-3">
+      <label for="company" class="form-label">Company</label>
+      <input id="company" name="company" class="form-control" required maxlength="100">
+    </div>
+
+    <div class="mb-3">
+      <label for="role" class="form-label">Position</label>
+      <input id="role" name="role" class="form-control" required maxlength="100">
+    </div>
+
+    <div class="mb-3">
+      <label for="location" class="form-label">Location</label>
+      <input id="location" name="location" class="form-control" required maxlength="100">
+    </div>
+
+    <div class="mb-3">
+      <label for="status" class="form-label">Application Status</label>
+      <select id="status" name="status" class="form-select">
+        <option>Saved</option>
+        <option>Applied</option>
+        <option>Interviewing</option>
+        <option>Offer</option>
+        <option>Rejected</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="dateApplied" class="form-label">Date Applied</label>
+      <input id="dateApplied" name="dateApplied" type="date" class="form-control" required>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+      <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+      <button type="submit" class="btn btn-primary">Save Application</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+  const dialog = document.getElementById('applicationDialog');
+  const form = document.getElementById('applicationForm');
+  const table = document.getElementById('applicationsTable');
+  const storageKey = 'internshipTrackrDemoApplications';
+
+  function getApplications() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      return Array.isArray(saved) ? saved : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveApplications(applications) {
+    localStorage.setItem(storageKey, JSON.stringify(applications));
+  }
+
+  document.getElementById('addApplicationBtn').addEventListener('click', () => {
+    dialog.showModal();
+  });
+
+  document.getElementById('cancelBtn').addEventListener('click', () => {
+    dialog.close();
+  });
+
+  function renderApplications() {
+    table.replaceChildren();
+    const applications = getApplications();
+
+    if (applications.length === 0) {
+      const row = table.insertRow();
+      const cell = row.insertCell();
+      cell.colSpan = 5;
+      cell.className = 'text-center text-muted py-4';
+      cell.textContent = 'No applications yet. Your tracked internships will appear here.';
+      return;
+    }
+
+    applications.forEach((application, index) => {
+      const row = table.insertRow();
+
+      [application.company, application.role, application.location].forEach(value => {
+        row.insertCell().textContent = value;
+      });
+
+      const statusCell = row.insertCell();
+      const select = document.createElement('select');
+      select.className = 'form-select form-select-sm';
+
+      ['Saved', 'Applied', 'Interviewing', 'Offer', 'Rejected'].forEach(status => {
+        const option = document.createElement('option');
+        option.value = status;
+        option.textContent = status;
+        select.appendChild(option);
+      });
+
+      select.value = application.status;
+      select.addEventListener('change', () => {
+        const updated = getApplications();
+        updated[index].status = select.value;
+        saveApplications(updated);
+      });
+      statusCell.appendChild(select);
+
+      row.insertCell().textContent = application.dateApplied;
+    });
+  }
+
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+
+    const data = new FormData(form);
+    const applications = getApplications();
+
+    applications.push({
+      company: data.get('company'),
+      role: data.get('role'),
+      location: data.get('location'),
+      status: data.get('status'),
+      dateApplied: data.get('dateApplied')
+    });
+
+    saveApplications(applications);
+    renderApplications();
+    form.reset();
+    dialog.close();
+  });
+
+  renderApplications();
+</script>

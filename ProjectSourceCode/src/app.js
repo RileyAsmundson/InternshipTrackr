@@ -181,11 +181,10 @@ app.get('/home', (req, res) => {
 });
 
 app.get('/tracker', (req, res) => {
-  res.status(500).send('Something went wrong, page not made yet');
+  res.render('pages/tracker');
 });
 
-
-// home page/dashboard. will need to change the names maybe but basic for rn
+// home page/ dashboard. will need to change the names maybe but basic for rn
 
 app.get('/home', async (req, res) => {
   try {
