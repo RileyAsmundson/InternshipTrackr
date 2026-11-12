@@ -61,3 +61,15 @@ CREATE TABLE if NOT EXISTS internship_to_tag (
     internship_id INT REFERENCES internships(id),
     tag_id INT REFERENCES internship_tags(tag_id)
 );
+
+/*
+   Table of application deadlines for users
+*/
+CREATE TABLE IF NOT EXISTS deadlines (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR(50) NOT NULL REFERENCES users(username),
+    internship_id INT REFERENCES internships(id),
+    title VARCHAR(200) NOT NULL,
+    deadline_date DATE NOT NULL,
+    completed BOOLEAN NOT NULL DEFAULT FALSE
+);

@@ -40,10 +40,10 @@
         {{#each tasks}}
           <li>
             <strong>{{this.title}}</strong>
-            <p>{{this.dueDate}}</p>
+            <p>{{this.dueDate}} — {{this.daysLeft}} days left</p>
           </li>
         {{else}}
-          <li>No upcoming tasks.</li>
+           <li>No upcoming tasks.</li>
         {{/each}}
       </ul>
     </div>

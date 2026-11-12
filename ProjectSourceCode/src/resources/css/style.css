@@ -171,6 +171,32 @@ button {
     color: var(--muted);
 }
 
+/* upcoming tasks */
+
+.tasks ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.tasks li {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.tasks li:last-child {
+    border-bottom: none;
+}
+
+.tasks li strong {
+    font-size: 15px;
+}
+
+.tasks li p {
+    color: var(--muted);
+    font-size: 13px;
+    margin: 4px 0 0;
+}
 
 /* pie chart, may remove later or fix but for rn i think it gotta be here. */
 
@@ -223,6 +249,12 @@ button {
 
     .homepage {
         padding: 25px 16px;
+    }
+
+    .status-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
     }
 }
 
