@@ -100,8 +100,14 @@ app.get('/browse', async (req, res) => {
 
     } else {
       // Build the Headcount Labs API request
+      const internshipFilter = '(intern OR internship OR internships)';
+
+      const titleFilter = search
+        ? `"${search.replace(/"/g, '""')}" AND ${internshipFilter}`
+        : internshipFilter;
+
       const params = new URLSearchParams({
-        title_advanced: '(intern OR internship OR internships)',
+        title_advanced: titleFilter,
         country: 'US',
         currentness: 'current',
         stale: 'false',
@@ -109,7 +115,6 @@ app.get('/browse', async (req, res) => {
         limit: '30'
       });
 
-      if (search) params.set('q', search);
       if (company) params.set('company', company);
       if (state) params.set('state', state);
 
