@@ -421,18 +421,194 @@ app.get('/home', async (req, res) => {
 });
 
 
-//calender route for adding events to the calendar
-app.post('/calendar', async (req, res) => {
-  const { company,date,time,location } = req.body;
-  
+const calendarSearchCache = new Map();
+const CALENDAR_SEARCH_CACHE_DURATION = 30 * 60 * 1000;
 
+app.get('/calendar/search', async (req, res) => {
+  if (!req.session?.username) {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
+
+  const search = typeof req.query.search === 'string'
+    ? req.query.search.trim().slice(0, 100)
+    : '';
+
+  if (!search) {
+    return res.json({ internships: [] });
+  }
+
+  const cached = calendarSearchCache.get(search);
+  if (cached &&
+      Date.now() - cached.time < CALENDAR_SEARCH_CACHE_DURATION) {
+    return res.json({ internships: cached.data });
+  }
+
+  try {
+    const apiKey = process.env.HEADCOUNTLABS_API_KEY;
+    if (!apiKey) {
+      throw new Error('Headcount Labs API key is missing');
+    }
+
+    const params = new URLSearchParams({
+      title_advanced: '(intern OR internship OR internships)',
+      country: 'US',
+      currentness: 'current',
+      stale: 'false',
+      has_application_url: 'true',
+      limit: '30',
+      q: search
+    });
+
+    const response = await fetch(
+      `https://api.headcountlabs.com/v1/jobs?${params}`,
+      {
+        headers: {
+          Authorization: `Bearer ${apiKey}`
+        },
+        signal: AbortSignal.timeout(15000)
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`API request failed: ${response.status}`);
+    }
+
+    const result = await response.json();
+    if (!Array.isArray(result.data)) {
+      throw new Error('Unexpected API response');
+    }
+
+    const internships = result.data.map(job => {
+      const posting = job.postings?.find(p =>
+        p.posting_status === 'listed' &&
+        p.application_url?.state === 'known' &&
+        /^https?:\/\//.test(p.application_url.value)
+      );
+
+      if (!posting ||
+          job.title?.state !== 'known' ||
+          typeof job.title.value !== 'string' ||
+          job.employer_name?.state !== 'known' ||
+          typeof job.employer_name.value !== 'string' ||
+          (typeof job.job_id !== 'string' &&
+           typeof job.job_id !== 'number')) {
+        return null;
+      }
+
+      const locationData =
+        posting.location?.state === 'known'
+          ? posting.location.value
+          : job.locations?.find(l => l.state === 'known')?.value;
+
+      const region = locationData?.state ||
+        locationData?.region?.replace(/^US-/, '');
+
+      const location = [
+        locationData?.city,
+        region
+      ].filter(Boolean).join(', ') || 'Not specified';
+
+      const company = job.employer_name.value.trim();
+
+      if (!company ||
+          company.length > 100 ||
+          !job.title.value.trim() ||
+          location.length > 100) {
+        return null;
+      }
+
+      return {
+        id: job.job_id,
+        company,
+        role: job.title.value.trim(),
+        location
+      };
+    }).filter(Boolean);
+
+    calendarSearchCache.set(search, {
+      time: Date.now(),
+      data: internships
+    });
+
+    return res.json({ internships });
+  } catch (error) {
+    console.error('Calendar Internship Search Error:', error);
+    return res.status(502).json({
+      error: 'Unable to search internships right now.'
+    });
+  }
+});
+
+// Save an interview linked to an existing internship.
+app.post('/calendar', async (req, res) => {
+  const username = req.session?.username;
+  if (!username) {
+    return res.redirect('/login');
+  }
+
+  const { company: rawCompany, location: rawLocation, date, time } =
+    req.body || {};
+  const company = typeof rawCompany === 'string' ? rawCompany.trim() : '';
+  const location = typeof rawLocation === 'string' ? rawLocation.trim() : '';
+  const validDate = typeof date === 'string' &&
+    /^\d{4}-\d{2}-\d{2}$/.test(date) &&
+    !Number.isNaN(Date.parse(`${date}T00:00:00.000Z`)) &&
+    new Date(`${date}T00:00:00.000Z`).toISOString().slice(0, 10) === date;
+  const validTime = typeof time === 'string' &&
+    /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(time);
+
+  if (!company ||
+      company.length > 100 ||
+      !location ||
+      location.length > 100 ||
+      !validDate ||
+      !validTime) {
+    return res.status(400).send('Invalid interview information');
+  }
+
+  try {
+    const interview = await db.tx(async transaction => {
+      const internships = await transaction.any(
+        `SELECT id
+         FROM internships
+         WHERE LOWER(BTRIM(company)) = LOWER($1)
+           AND LOWER(BTRIM(location)) = LOWER($2)
+         ORDER BY id
+         LIMIT 2`,
+        [company, location]
+      );
+
+      if (internships.length !== 1) {
+        return null;
+      }
+
+      return transaction.one(
+        `INSERT INTO interviews
+           (internship_id, user_id, interview_date, interview_time, status)
+         VALUES ($1, $2, $3, $4, 'Scheduled')
+         RETURNING id`,
+        [internships[0].id, username, date, time]
+      );
+    });
+
+    if (!interview) {
+      return res.status(400).send(
+        'Company and location must match exactly one existing internship'
+      );
+    }
+
+    return res.redirect('/calendar');
+  } catch (error) {
+    console.error('Calendar Interview Error:', error);
+    return res.status(500).send('Unable to save interview');
+  }
 
 });
 
-//calender route for setting up the calendar page
-app.get('/calendar', (req, res) => {
-
-if (!req.session.username) {
+// Calendar route for setting up the calendar page.
+app.get('/calendar', async (req, res) => {
+  const username = req.session?.username;
+  if (!username) {
     return res.redirect('/login');
   }
 
@@ -443,15 +619,56 @@ if (!req.session.username) {
     ? requestedMonth - 1
     : today.getMonth();
 
+  const formatDate = date => [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, '0'),
+    String(date.getDate()).padStart(2, '0')
+  ].join('-');
+
+  const monthStart = new Date(year, month, 1);
+  const nextMonthStart = new Date(year, month + 1, 1);
+  let interviews;
+
+  try {
+    interviews = await db.any(
+      `SELECT TO_CHAR(interview.interview_date, 'YYYY-MM-DD') AS "interviewDate",
+              TO_CHAR(interview.interview_time, 'HH12:MI AM') AS "interviewTime",
+              COALESCE(internship.company, 'Interview') AS company,
+              COALESCE(internship.title, 'Interview') AS role
+       FROM interviews AS interview
+       LEFT JOIN internships AS internship
+         ON internship.id = interview.internship_id
+       WHERE interview.user_id = $1
+         AND interview.interview_date >= $2::DATE
+         AND interview.interview_date < $3::DATE
+       ORDER BY interview.interview_date, interview.interview_time`,
+      [username, formatDate(monthStart), formatDate(nextMonthStart)]
+    );
+  } catch (error) {
+    console.error('Calendar Interview Lookup Error:', error);
+    return res.status(500).send('Unable to load calendar interviews');
+  }
+
+  const interviewsByDate = new Map();
+  interviews.forEach(interview => {
+    const dateInterviews =
+      interviewsByDate.get(interview.interviewDate) || [];
+    dateInterviews.push(interview);
+    interviewsByDate.set(interview.interviewDate, dateInterviews);
+  });
+
   const firstWeekday = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const cellCount = Math.ceil((firstWeekday + daysInMonth) / 7) * 7;
 
   const cells = Array.from({ length: cellCount }, (_, index) => {
     const date = new Date(year, month, index - firstWeekday + 1);
+    const dateKey = formatDate(date);
+
     return {
       date: date.getDate(),
-      isCurrentMonth: date.getMonth() === month
+      isCurrentMonth: date.getMonth() === month && date.getFullYear() === year,
+      interviews: interviewsByDate.get(dateKey) || []
     };
   });
 
@@ -460,13 +677,24 @@ if (!req.session.username) {
     weeks.push(cells.slice(i, i + 7));
   }
 
+  const previousMonth = new Date(year, month - 1, 1);
+  const followingMonth = new Date(year, month + 1, 1);
+
   res.render('pages/calendar', {
-    monthYear: new Date(year, month, 1).toLocaleDateString('en-US', {
+    monthYear: monthStart.toLocaleDateString('en-US', {
       month: 'long',
       year: 'numeric'
     }),
     weekDays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-    weeks
+    weeks,
+    previousMonth: {
+      year: previousMonth.getFullYear(),
+      month: previousMonth.getMonth() + 1
+    },
+    nextMonth: {
+      year: followingMonth.getFullYear(),
+      month: followingMonth.getMonth() + 1
+    }
   });
 });
 

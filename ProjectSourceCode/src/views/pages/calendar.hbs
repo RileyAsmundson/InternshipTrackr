@@ -27,26 +27,53 @@
 
       <form action="/calendar" method="POST" id="create-form">
         <div class="modal-body">
-            <div class="mb-3">
-              <label for="company" class="form-label">Company</label>
-              <input type="text" class="form-control" id="company">
+          <div class="mb-3">
+            <label for="internship-search" class="form-label">
+              Search internship listings
+            </label>
+            <input type="search" class="form-control" id="internship-search"
+                   placeholder="Search company, role, or location"
+                   autocomplete="off">
+          </div>
+          <div class="mb-3">
+            <label for="internship-select" class="form-label">
+              Select an internship
+            </label>
+            <select class="form-select" id="internship-select" required>
+              <option value="">Search to load internship listings</option>
+            </select>
+            <div id="internship-search-status" class="form-text"
+                 role="status" aria-live="polite"></div>
+          </div>
+          <div class="mb-3">
+            <label for="company" class="form-label">Company</label>
+            <input type="text" class="form-control" id="company"
+                   name="company" maxlength="100" readonly>
+          </div>
+          <div class="mb-3">
+            <label for="interview-location" class="form-label">Location</label>
+            <input type="text" class="form-control" id="interview-location"
+                   name="location" maxlength="100" readonly>
+            <div class="form-text">
+              The selected company and location must match an existing
+              internship in your database.
             </div>
-            <div class="mb-3">
-              <label for="interview-date" class="form-label">Date</label>
-              <input type="date" class="form-control" id="interview-date" required>
-            </div>
-            <div class="mb-3">
-              <label for="interview-time" class="form-label">Time</label>
-              <input type="time" class="form-control" id="interview-time" required>
-            </div>
-            <div class="mb-3">
-              <label for="interview-location" class="form-label">Location</label>
-              <input type="text" class="form-control" id="interview-location">
-            </div>  
-        </form>
+          </div>
+          <div class="mb-3">
+            <label for="interview-date" class="form-label">Date</label>
+            <input type="date" class="form-control" id="interview-date"
+                   name="date" required>
+          </div>
+          <div class="mb-3">
+            <label for="interview-time" class="form-label">Time</label>
+            <input type="time" class="form-control" id="interview-time"
+                   name="time" required>
+          </div>
+        </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-primary">Add</button>
         </div>
+      </form>
     </div>
   </div>
 </div>
@@ -66,7 +93,14 @@
       <tr>
         {{#each this}}
           <td class="{{#unless this.isCurrentMonth}}text-muted{{/unless}}">
-            {{this.date}}
+            <div class="fw-semibold">{{this.date}}</div>
+            {{#each this.interviews}}
+              <div class="small text-start text-break mb-1">
+                <span class="fw-semibold">{{this.interviewTime}}</span><br>
+                {{this.company}}
+                {{#if this.role}}<br>{{this.role}}{{/if}}
+              </div>
+            {{/each}}
           </td>
         {{/each}}
       </tr>
@@ -75,4 +109,5 @@
 </table>
     </div>
   </div>
+
 </div>
