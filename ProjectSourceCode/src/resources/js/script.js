@@ -3,12 +3,14 @@ const internshipSelect = document.getElementById('internship-select');
 const internshipSearchStatus =
   document.getElementById('internship-search-status');
 const companyInput = document.getElementById('company');
+const roleInput = document.getElementById('internship-role');
 const locationInput = document.getElementById('interview-location');
 
 if (internshipSearch &&
     internshipSelect &&
     internshipSearchStatus &&
     companyInput &&
+    roleInput &&
     locationInput) {
   const internshipsById = new Map();
   let searchTimeout;
@@ -19,6 +21,7 @@ if (internshipSearch &&
     activeRequest?.abort();
     internshipsById.clear();
     companyInput.value = '';
+    roleInput.value = '';
     locationInput.value = '';
 
     const searchTerm = internshipSearch.value.trim();
@@ -93,6 +96,7 @@ if (internshipSearch &&
   internshipSelect.addEventListener('change', () => {
     const internship = internshipsById.get(internshipSelect.value);
     companyInput.value = internship?.company || '';
+    roleInput.value = internship?.role || '';
     locationInput.value = internship?.location || '';
   });
 }

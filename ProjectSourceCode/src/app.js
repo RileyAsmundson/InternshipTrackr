@@ -449,14 +449,16 @@ app.get('/calendar/search', async (req, res) => {
       throw new Error('Headcount Labs API key is missing');
     }
 
+    const internshipFilter = '(intern OR internship OR internships)';
+    const titleFilter = `"${search.replace(/"/g, '""')}" AND ${internshipFilter}`;
+
     const params = new URLSearchParams({
-      title_advanced: '(intern OR internship OR internships)',
+      title_advanced: titleFilter,
       country: 'US',
       currentness: 'current',
       stale: 'false',
       has_application_url: 'true',
-      limit: '30',
-      q: search
+      limit: '30'
     });
 
     const response = await fetch(
@@ -509,10 +511,12 @@ app.get('/calendar/search', async (req, res) => {
       ].filter(Boolean).join(', ') || 'Not specified';
 
       const company = job.employer_name.value.trim();
+      const role = job.title.value.trim();
 
       if (!company ||
           company.length > 100 ||
-          !job.title.value.trim() ||
+          !role ||
+          role.length > 100 ||
           location.length > 100) {
         return null;
       }
@@ -520,7 +524,7 @@ app.get('/calendar/search', async (req, res) => {
       return {
         id: job.job_id,
         company,
-        role: job.title.value.trim(),
+        role,
         location
       };
     }).filter(Boolean);
@@ -546,9 +550,15 @@ app.post('/calendar', async (req, res) => {
     return res.redirect('/login');
   }
 
-  const { company: rawCompany, location: rawLocation, date, time } =
-    req.body || {};
+  const {
+    company: rawCompany,
+    role: rawRole,
+    location: rawLocation,
+    date,
+    time
+  } = req.body || {};
   const company = typeof rawCompany === 'string' ? rawCompany.trim() : '';
+  const role = typeof rawRole === 'string' ? rawRole.trim() : '';
   const location = typeof rawLocation === 'string' ? rawLocation.trim() : '';
   const validDate = typeof date === 'string' &&
     /^\d{4}-\d{2}-\d{2}$/.test(date) &&
@@ -559,6 +569,8 @@ app.post('/calendar', async (req, res) => {
 
   if (!company ||
       company.length > 100 ||
+      !role ||
+      role.length > 100 ||
       !location ||
       location.length > 100 ||
       !validDate ||
@@ -568,18 +580,26 @@ app.post('/calendar', async (req, res) => {
 
   try {
     const interview = await db.tx(async transaction => {
-      const internships = await transaction.any(
+      let internship = await transaction.oneOrNone(
         `SELECT id
          FROM internships
          WHERE LOWER(BTRIM(company)) = LOWER($1)
-           AND LOWER(BTRIM(location)) = LOWER($2)
+           AND LOWER(BTRIM(title)) = LOWER($2)
+           AND LOWER(BTRIM(location)) = LOWER($3)
          ORDER BY id
-         LIMIT 2`,
-        [company, location]
+         LIMIT 1`,
+        [company, role, location]
       );
 
-      if (internships.length !== 1) {
-        return null;
+      if (!internship) {
+        internship = await transaction.one(
+          `INSERT INTO internships
+             (title, description, company, location,
+              start_date, end_date, openings)
+           VALUES ($1, '', $2, $3, CURRENT_DATE, CURRENT_DATE, 1)
+           RETURNING id`,
+          [role, company, location]
+        );
       }
 
       return transaction.one(
@@ -587,15 +607,9 @@ app.post('/calendar', async (req, res) => {
            (internship_id, user_id, interview_date, interview_time, status)
          VALUES ($1, $2, $3, $4, 'Scheduled')
          RETURNING id`,
-        [internships[0].id, username, date, time]
+        [internship.id, username, date, time]
       );
     });
-
-    if (!interview) {
-      return res.status(400).send(
-        'Company and location must match exactly one existing internship'
-      );
-    }
 
     return res.redirect('/calendar');
   } catch (error) {
