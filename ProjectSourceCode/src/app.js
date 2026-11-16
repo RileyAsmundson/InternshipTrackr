@@ -276,6 +276,8 @@ app.get('/home', async (req, res) => {
 
     const upcomingDeadlines = Number(deadlineResult[0].total);
 
+    
+
     // upcoming tasks
     const tasks = await db.query(
       `SELECT id,
@@ -354,6 +356,121 @@ app.get('/home', async (req, res) => {
     res.status(500).send('Error loading dashboard');
   }
 });
+
+
+ // add a new deadline
+app.post('/deadlines/add', async (req, res) => {
+  try {
+    // logged-in user
+    const username = req.session?.username;
+
+    if (!username) {
+      return res.redirect('/login');
+    }
+
+    // deadline information from form
+    const { title, deadline_date } = req.body;
+
+    // validate input
+    if (
+      typeof title !== 'string' ||
+      !title.trim() ||
+      title.trim().length > 200 ||
+      typeof deadline_date !== 'string' ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(deadline_date) ||
+      Number.isNaN(Date.parse(deadline_date)) ||
+      new Date(deadline_date).toISOString().slice(0, 10) !== deadline_date
+    ) {
+      return res.status(400).send('Invalid deadline information');
+    }
+
+    // insert deadline into db
+    await db.none(
+      `INSERT INTO deadlines (user_id, title, deadline_date)
+       VALUES ($1, $2, $3)`,
+      [username, title.trim(), deadline_date]
+    );
+
+    // return to dashboard
+    res.redirect('/home');
+
+  } catch (error) {
+    console.error('Add Deadline Error:', error);
+    res.status(500).send('Error adding deadline');
+  }
+});
+
+
+ // mark deadline complete
+app.post('/deadlines/:id/complete', async (req, res) => {
+  try {
+    // logged-in user
+    const username = req.session?.username;
+
+    if (!username) {
+      return res.redirect('/login');
+    }
+
+    // deadline ID
+    const deadlineId = Number(req.params.id);
+
+    if (!Number.isSafeInteger(deadlineId) || deadlineId <= 0) {
+      return res.status(400).send('Invalid deadline ID');
+    }
+
+    // update deadline in database
+    await db.none(
+      `UPDATE deadlines
+       SET completed = TRUE
+       WHERE id = $1 AND user_id = $2`,
+      [deadlineId, username]
+    );
+
+    // return to dashboard
+    res.redirect('/home');
+
+  } catch (error) {
+    console.error('Complete Deadline Error:', error);
+    res.status(500).send('Error completing deadline');
+  }
+});
+
+
+ // delete  deadline
+app.post('/deadlines/:id/delete', async (req, res) => {
+  try {
+    // logged-in user
+    const username = req.session?.username;
+
+    if (!username) {
+      return res.redirect('/login');
+    }
+
+    // deadline ID
+    const deadlineId = Number(req.params.id);
+
+    if (!Number.isSafeInteger(deadlineId) || deadlineId <= 0) {
+      return res.status(400).send('Invalid deadline ID');
+    }
+
+    // delete deadline from database
+    await db.none(
+      `DELETE FROM deadlines
+       WHERE id = $1 AND user_id = $2`,
+      [deadlineId, username]
+    );
+
+    // return to dashboard
+    res.redirect('/home');
+
+  } catch (error) {
+    console.error('Delete Deadline Error:', error);
+    res.status(500).send('Error deleting deadline');
+  }
+});
+
+
+
 
 
 //calender route for adding events to the calendar
