@@ -1,0 +1,17 @@
+Meeting Date: 11/16/2026
+Meeting Time/Location: 12:45 PM on Zoom
+Scribe: Riley Asmundson
+
+1. Decisions Made
+- Reviewed the team's progress, including completed registration/login, application tracker, and calendar features.
+- Decided to connect the calendar with the upcoming tasks
+
+2. Alternative Actions/Options Discussed
+- No major alternatives were discussed.
+
+3. Follow-Up Items, Roles, and Responsibilities
+Riley: finish browse page functionality
+Emma: continue with styling pages as they get functionally finished
+Alex: finalize calendar functionality
+Vishnu: connect upcoming taks to calendar
+Eder: continue working with registration functionality
