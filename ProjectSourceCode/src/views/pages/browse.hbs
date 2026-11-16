@@ -1,113 +1,153 @@
-<div class="container mt-4">
-  <div class="mb-4">
-    <h2 class="fw-bold">Browse Internships</h2>
-    <p class="text-muted">
-      Explore internship opportunities and find positions
-      that match your interests.
-    </p>
+
+<div class="container browse-page">
+
+  <!-- Page Header -->
+  <div class="browse-header">
+    <div>
+      <h1>Browse Internships</h1>
+      <p>Explore opportunities and find internships that match your interests.</p>
+    </div>
   </div>
 
-  <!-- Internship Search -->
-  <form action="/browse" method="GET">
-    <label for="search" class="form-label">
-      Search by company, position, or location
-    </label>
-
-    <div class="mb-2">
-      <input type="text" class="form-control"
-            id="search" name="search"
-            placeholder="e.g. Deloitte, Analyst, Denver">
-            value="{{search}}">
-
+  <!-- Search and Filters -->
+  <div class="browse-search-panel">
+    <div class="search-panel-heading">
+      <h2>Find an Internship</h2>
+      <p>Search by keyword or narrow your results.</p>
     </div>
 
-    <!-- Additional Internship Filters -->
-    <div class="row g-2 mb-2">
-      <!-- Company Filter -->
-      <div class="col-md-6">
-        <label for="company" class="form-label">Company</label>
-        <input type="text" class="form-control"
-              id="company" name="company"
-              placeholder="e.g. Deloitte"
-              value="{{company}}">
+    <form action="/browse" method="GET">
+
+      <div class="browse-field">
+        <label for="search">Search Internships</label>
+        <input
+          type="text"
+          class="form-control"
+          id="search"
+          name="search"
+          placeholder="Job title, company, or location"
+          value="{{search}}">
       </div>
 
-      <!-- State Filter -->
-      <div class="col-md-6">
-        <label for="state" class="form-label">State</label>
-        <input type="text" class="form-control"
-              id="state" name="state"
-              placeholder="e.g. CO"
-              maxlength="2"
-              value="{{state}}">
+      <div class="browse-filter-row">
+        <div class="browse-field">
+          <label for="company">Company</label>
+          <input
+            type="text"
+            class="form-control"
+            id="company"
+            name="company"
+            placeholder="e.g. Deloitte"
+            value="{{company}}">
+        </div>
+
+        <div class="browse-field">
+          <label for="state">State</label>
+          <input
+            type="text"
+            class="form-control"
+            id="state"
+            name="state"
+            placeholder="e.g. CO"
+            maxlength="2"
+            value="{{state}}">
+        </div>
       </div>
-    </div>
 
-    <button type="submit" class="btn btn-primary">
-      Search
-    </button>
+      <div class="browse-search-actions">
+        <button type="submit" class="browse-btn">
+          Search Internships
+        </button>
 
-  </form>
+        <a href="/browse" class="browse-clear">
+          Clear Filters
+        </a>
+      </div>
 
-  <div class="mt-2">
-    <a href="/browse" class="text-decoration-none">
-      Clear Search
-    </a>
+    </form>
   </div>
-
-  <hr>
 
   <!-- API Error Message -->
   {{#if error}}
-    <div class="alert alert-danger">
+
+    <div class="alert alert-danger browse-alert">
       {{error}}
     </div>
+
   {{else}}
 
-  <!-- Internship Listings -->
-  <h3>Available Internships</h3>
+    <!-- Internship Results -->
+    <div class="browse-results-header">
+      <div>
+        <h2>Available Internships</h2>
+        <p>Browse open positions and explore opportunities.</p>
+      </div>
+    </div>
 
-  {{#each internships}}
-  <div class="card mb-3 shadow-sm">
-    <div class="card-body">
-      <h5 class="card-title fw-bold">{{this.role}}</h5>
+    <div class="internship-grid">
+      {{#each internships}}
 
-      <h6 class="text-primary">
-        {{this.company}}
-      </h6>
+        <div class="internship-card">
 
-      <p class="text-muted">
-        Location: {{this.location}}
-      </p>
+          <div class="internship-card-top">
+            <span class="internship-tag">
+              Internship
+            </span>
+          </div>
 
-        <details>
-          <summary>View Details</summary>
-          <p>{{this.description}}</p>
-        </details>
-        <!-- Application Link -->
-        {{#if this.applicationUrl}}
-          <a href="{{this.applicationUrl}}"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="btn btn-primary mt-3">
-            View Application
+          <h3 class="internship-title">
+            {{this.role}}
+          </h3>
+
+          <p class="internship-company">
+            {{this.company}}
+          </p>
+
+          <div class="internship-location">
+            <span class="location-dot"></span>
+            {{this.location}}
+          </div>
+
+          <!-- Expandable Description -->
+          <details class="internship-details">
+            <summary>View Details</summary>
+            <div class="internship-description">
+              {{this.description}}
+            </div>
+          </details>
+
+          <!-- Application Link -->
+          {{#if this.applicationUrl}}
+            <div class="internship-card-footer">
+              <a
+                href="{{this.applicationUrl}}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="browse-btn internship-apply">
+                View Application
+                <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          {{/if}}
+
+        </div>
+
+      {{else}}
+
+        <div class="browse-empty-state">
+          <h3>No internships found</h3>
+          <p>
+            Try searching for a different company,
+            position, or location.
+          </p>
+          <a href="/browse" class="browse-btn">
+            View All Internships
           </a>
-        {{/if}}
-    </div>
-  </div>
+        </div>
 
-  {{else}}
-    <!-- No Search Results -->
-    <div class="alert alert-info text-center">
-      <h5>No internships found</h5>
-      <p>
-        Try searching for a different company,
-        position, or location.
-      </p>
-      <a href="/browse" class="btn btn-outline-primary">
-        View All Internships
-      </a>
+      {{/each}}
     </div>
-  {{/each}}
-{{/if}}
+
+  {{/if}}
+
 </div>
