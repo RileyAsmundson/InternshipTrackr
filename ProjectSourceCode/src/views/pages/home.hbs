@@ -36,16 +36,56 @@
     <div class="tasks">
       <h2>Upcoming Tasks</h2>
 
-      <ul>
+      <!-- add deadline form -->
+      <form action="/deadlines/add" method="POST" class="deadline-form">
+
+        <input
+          type="text"
+          name="title"
+          placeholder="Deadline title"
+          maxlength="200"
+          required
+        >
+
+        <input
+          type="date"
+          name="deadline_date"
+          required
+        >
+
+        <button type="submit">Add Deadline</button>
+
+      </form>
+
+      <!-- upcoming deadlines -->
+      <ul class="deadline-list">
         {{#each tasks}}
-          <li>
-            <strong>{{this.title}}</strong>
-            <p>{{this.dueDate}} — {{this.daysLeft}} days left</p>
+          <li class="deadline-item">
+
+            <div class="deadline-info">
+              <strong>{{this.title}}</strong>
+              <p>{{this.dueDate}} — {{this.daysLeft}} days left</p>
+            </div>
+
+            <!-- deadline actions -->
+            <div class="deadline-actions">
+
+              <form action="/deadlines/{{this.id}}/complete" method="POST">
+                <button type="submit">Complete</button>
+              </form>
+
+              <form action="/deadlines/{{this.id}}/delete" method="POST">
+                <button type="submit">Delete</button>
+              </form>
+
+            </div>
+
           </li>
         {{else}}
            <li>No upcoming tasks.</li>
         {{/each}}
       </ul>
+
     </div>
 
     <!-- application status pie chart -->
