@@ -236,6 +236,76 @@ button {
     color: var(--muted);
 }
 
+
+/* deadline tracking form */
+.deadline-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.deadline-form input {
+  flex: 1;
+  min-width: 120px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.deadline-form button {
+  padding: 10px 15px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.deadline-form button:hover {
+  background-color: #2980b9;
+}
+
+/* deadline list */
+.deadline-list {
+  list-style: none;
+  padding: 0;
+}
+
+.deadline-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.deadline-info p {
+  margin: 5px 0 0;
+  font-size: 14px;
+}
+
+/* complete and delete buttons */
+.deadline-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.deadline-actions button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: #e9edf2;
+  cursor: pointer;
+}
+
+.deadline-actions button:hover {
+  background-color: #d9e2eb;
+}
+
+
 /* Responsive Design */
 
 @media (max-width: 768px) {

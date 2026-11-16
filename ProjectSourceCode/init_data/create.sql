@@ -38,16 +38,21 @@ CREATE TABLE if NOT EXISTS interviews (
     status VARCHAR(20) NOT NULL
 );
 
-/* 
+
+/*
    Table of all the applications
 */
-CREATE TABLE if NOT EXISTS applications (
+CREATE TABLE IF NOT EXISTS applications (
     id SERIAL PRIMARY KEY,
     internship_id INT REFERENCES internships(id),
     user_id VARCHAR(50) REFERENCES users(username),
     application_date DATE NOT NULL,
-    status VARCHAR(20) NOT NULL
+    status VARCHAR(20) NOT NULL,
+    company VARCHAR(100),
+    role VARCHAR(100),
+    location VARCHAR(100)
 );
+
 
 /* 
    Table of all the tags for internships for categorization
