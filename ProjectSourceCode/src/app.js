@@ -5,6 +5,7 @@ const path = require('path');
 // Session authentication  
 const session = require('express-session');
 const authRoutes = require('./auth');
+const profileRoutes = require('./profile');
 
 // Database connection
 const { db } = require('./db');
@@ -64,6 +65,7 @@ app.use((req, res, next) => {
 
 // Register the login and logout routes.
 app.use(authRoutes);
+app.use('/profile', profileRoutes);
 
 
 const browseCache = new Map();
@@ -238,6 +240,7 @@ app.post('/register', async (req, res) => {
   const lastName = req.body.lastName;
   const email = req.body.email;
   const password = req.body.password;
+  const phoneNumber = req.body.phoneNumber.trim();
 
   try {
 
@@ -251,14 +254,15 @@ app.post('/register', async (req, res) => {
     // Save user to database
     await db.none(
       `INSERT INTO users
-       (username, password, email, first_name, last_name)
-       VALUES ($1, $2, $3, $4, $5)`,
+       (username, password, email, first_name, last_name, phone_number)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
       [
         username,
         hashedPassword,
         email,
         firstName,
-        lastName
+        lastName,
+        phoneNumber
       ]
     );
 
