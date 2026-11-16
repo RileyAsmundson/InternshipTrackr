@@ -100,8 +100,14 @@ app.get('/browse', async (req, res) => {
 
     } else {
       // Build the Headcount Labs API request
+      const internshipFilter = '(intern OR internship OR internships)';
+
+      const titleFilter = search
+        ? `"${search.replace(/"/g, '""')}" AND ${internshipFilter}`
+        : internshipFilter;
+
       const params = new URLSearchParams({
-        title_advanced: '(intern OR internship OR internships)',
+        title_advanced: titleFilter,
         country: 'US',
         currentness: 'current',
         stale: 'false',
@@ -109,7 +115,6 @@ app.get('/browse', async (req, res) => {
         limit: '30'
       });
 
-      if (search) params.set('q', search);
       if (company) params.set('company', company);
       if (state) params.set('state', state);
 
@@ -282,6 +287,117 @@ app.get('/tracker', (req, res) => {
   res.render('pages/tracker');
 });
 
+
+ // Get the logged-in user's applications
+app.get('/applications', async (req, res) => {
+  try {
+    const username = req.session?.username;
+
+    if (!username) {
+      return res.status(401).json({
+        error: 'You must be logged in'
+      });
+    }
+
+    // Retrieve applications belonging to this user
+    const applications = await db.query(
+      `SELECT
+         id,
+         company,
+         role,
+         location,
+         status,
+         TO_CHAR(application_date, 'YYYY-MM-DD') AS "dateApplied"
+       FROM applications
+       WHERE user_id = $1
+       ORDER BY id DESC`,
+      [username]
+    );
+
+    res.json(applications);
+
+  } catch (error) {
+    console.error('Error loading applications:', error);
+
+    res.status(500).json({
+      error: 'Failed to load applications'
+    });
+  }
+});
+
+
+ // Save a new internship application
+app.post('/applications', async (req, res) => {
+  try {
+    // Check that the user is logged in
+    const username = req.session?.username;
+
+    if (!username) {
+      return res.status(401).json({
+        error: 'You must be logged in'
+      });
+    }
+
+    // Get application details from the form
+    const { company, role, location, status, dateApplied } = req.body;
+
+    // Validate the application details
+    const validStatuses = [
+      'Saved', 'Applied', 'Interviewing', 'Offer', 'Rejected'
+    ];
+
+    if (
+      typeof company !== 'string' ||
+      !company.trim() ||
+      company.length > 100 ||
+      typeof role !== 'string' ||
+      !role.trim() ||
+      role.length > 100 ||
+      typeof location !== 'string' ||
+      !location.trim() ||
+      location.length > 100 ||
+      !validStatuses.includes(status) ||
+      typeof dateApplied !== 'string' ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(dateApplied) ||
+      Number.isNaN(Date.parse(dateApplied)) ||
+      new Date(dateApplied).toISOString().slice(0, 10) !== dateApplied
+    ) {
+      return res.status(400).json({
+        error: 'Invalid application details'
+      });
+    }
+
+    // Save the application to postgres
+    const result = await db.query(
+      `INSERT INTO applications
+       (user_id, company, role, location, status, application_date)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING id`,
+      [
+        username,
+        company.trim(),
+        role.trim(),
+        location.trim(),
+        status,
+        dateApplied
+      ]
+    );
+
+    res.status(201).json({
+      message: 'Application saved successfully',
+      id: result[0].id
+    });
+
+  } catch (error) {
+    console.error('Error saving application:', error);
+
+    res.status(500).json({
+      error: 'Failed to save application'
+    });
+  }
+});
+
+
 // home page/ dashboard. will need to change the names maybe but basic for rn
 
 
@@ -340,6 +456,8 @@ app.get('/home', async (req, res) => {
     );
 
     const upcomingDeadlines = Number(deadlineResult[0].total);
+
+    
 
     // upcoming tasks
     const tasks = await db.query(
