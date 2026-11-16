@@ -335,6 +335,117 @@ app.get('/tracker', (req, res) => {
   res.render('pages/tracker');
 });
 
+
+ // Get the logged-in user's applications
+app.get('/applications', async (req, res) => {
+  try {
+    const username = req.session?.username;
+
+    if (!username) {
+      return res.status(401).json({
+        error: 'You must be logged in'
+      });
+    }
+
+    // Retrieve applications belonging to this user
+    const applications = await db.query(
+      `SELECT
+         id,
+         company,
+         role,
+         location,
+         status,
+         TO_CHAR(application_date, 'YYYY-MM-DD') AS "dateApplied"
+       FROM applications
+       WHERE user_id = $1
+       ORDER BY id DESC`,
+      [username]
+    );
+
+    res.json(applications);
+
+  } catch (error) {
+    console.error('Error loading applications:', error);
+
+    res.status(500).json({
+      error: 'Failed to load applications'
+    });
+  }
+});
+
+
+ // Save a new internship application
+app.post('/applications', async (req, res) => {
+  try {
+    // Check that the user is logged in
+    const username = req.session?.username;
+
+    if (!username) {
+      return res.status(401).json({
+        error: 'You must be logged in'
+      });
+    }
+
+    // Get application details from the form
+    const { company, role, location, status, dateApplied } = req.body;
+
+    // Validate the application details
+    const validStatuses = [
+      'Saved', 'Applied', 'Interviewing', 'Offer', 'Rejected'
+    ];
+
+    if (
+      typeof company !== 'string' ||
+      !company.trim() ||
+      company.length > 100 ||
+      typeof role !== 'string' ||
+      !role.trim() ||
+      role.length > 100 ||
+      typeof location !== 'string' ||
+      !location.trim() ||
+      location.length > 100 ||
+      !validStatuses.includes(status) ||
+      typeof dateApplied !== 'string' ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(dateApplied) ||
+      Number.isNaN(Date.parse(dateApplied)) ||
+      new Date(dateApplied).toISOString().slice(0, 10) !== dateApplied
+    ) {
+      return res.status(400).json({
+        error: 'Invalid application details'
+      });
+    }
+
+    // Save the application to postgres
+    const result = await db.query(
+      `INSERT INTO applications
+       (user_id, company, role, location, status, application_date)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING id`,
+      [
+        username,
+        company.trim(),
+        role.trim(),
+        location.trim(),
+        status,
+        dateApplied
+      ]
+    );
+
+    res.status(201).json({
+      message: 'Application saved successfully',
+      id: result[0].id
+    });
+
+  } catch (error) {
+    console.error('Error saving application:', error);
+
+    res.status(500).json({
+      error: 'Failed to save application'
+    });
+  }
+});
+
+
 // home page/ dashboard. will need to change the names maybe but basic for rn
 
 
@@ -584,6 +695,56 @@ app.post('/deadlines/:id/delete', async (req, res) => {
   } catch (error) {
     console.error('Delete Deadline Error:', error);
     res.status(500).send('Error deleting deadline');
+  }
+});
+
+
+// Update an application's status
+app.post('/applications/:id/status', async (req, res) => {
+  try {
+    const username = req.session?.username;
+    if (!username) {
+      return res.status(401).json({
+        error: 'You must be logged in'
+      });
+    }
+
+    const { status } = req.body;
+    const { id } = req.params;
+
+    const validStatuses = [
+      'Saved', 'Applied', 'Interviewing', 'Offer', 'Rejected'
+    ];
+
+    if (!/^[1-9]\d*$/.test(id) || !validStatuses.includes(status)) {
+      return res.status(400).json({
+        error: 'Invalid application ID or status'
+      });
+    }
+
+    const result = await db.query(
+      `UPDATE applications
+       SET status = $1
+       WHERE id = $2 AND user_id = $3
+       RETURNING id`,
+      [status, id, username]
+    );
+
+    if (result.length === 0) {
+      return res.status(404).json({
+        error: 'Application not found'
+      });
+    }
+
+    res.json({
+      message: 'Application status updated successfully'
+    });
+
+  } catch (error) {
+    console.error('Error updating application status:', error);
+    res.status(500).json({
+      error: 'Failed to update application status'
+    });
   }
 });
 
