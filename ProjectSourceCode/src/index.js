@@ -13,7 +13,7 @@ async function startServer() {
   try {
     // Add application fields if they don't already exist
     await db.none(`
-      ALTER TABLE applications
+      ALTER TABLE IF EXISTS applications
       ADD COLUMN IF NOT EXISTS company VARCHAR(100),
       ADD COLUMN IF NOT EXISTS role VARCHAR(100),
       ADD COLUMN IF NOT EXISTS location VARCHAR(100);
